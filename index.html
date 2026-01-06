@@ -649,7 +649,6 @@
         <!-- Right Column -->
         <div style="flex:1; min-width: 300px;">
             
-
 <div id="abilitiesWrapper" style="
     background: #f8fafc;      
     border-radius: 12px;      
@@ -670,16 +669,34 @@
     </div>
 </div>
 
-            <!-- Evolution Chain -->
-            <div id="evoChain" style="
-    display: flex; 
-    overflow-x: auto; 
-    gap: 3px;           /* menos espacio entre Pokémon */
-    margin-top: 10px; 
-    align-items: center; 
-    justify-content: center; /* centra la cadena */
-    padding: 5px 0;     /* menos padding arriba/abajo */
-    scrollbar-width: none;">
+            <!-- Evolution Chain Wrapper -->
+<div id="evoWrapper" style="
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 15px;
+    margin-top: 20px;
+">
+    <span style="
+        font-size: 11px;
+        font-weight: 900;
+        color: #64748b;
+        display: block;
+        margin-bottom: 12px;
+        letter-spacing: 1px;
+    ">EVOLUTION CHAIN</span>
+    
+    <div id="evoChain" style="
+        display: flex;
+        overflow-x: auto;
+        gap: 6px;              /* un poco más espacioso que tu 3px original */
+        align-items: center;
+        justify-content: flex-start; /* scroll horizontal alineado al inicio */
+        padding: 5px 0;
+        scrollbar-width: none;
+    ">
+        <!-- JS pondrá aquí los Pokémon de la cadena -->
+    </div>
 </div>
 
             <!-- Moves Table -->
@@ -1259,5 +1276,6 @@ async function loadRandomDexEntry(pokemonId) {
 </script>
 </body>
 </html>
+
 
 
