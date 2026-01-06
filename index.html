@@ -487,6 +487,18 @@
                         onclick="setGame('sv', this)">
                         S / V
                 </button>
+                <button id="btn-la"
+                     class="game-btn" 
+                    style="background: linear-gradient(to right, #ff9900, #ffcc00); 
+        border-radius: 50px; 
+        border: none; 
+        padding: 10px 20px; 
+        color: white; 
+        cursor: pointer; 
+        font-weight: bold;" 
+        onclick="setGame('la', this)">
+        LA
+</button>
             </div>
             <button id="shinySparkle" class="shiny-btn" onclick="toggleShiny()">✨</button>
         </div>
@@ -754,7 +766,16 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
     }
 
     // --- Placeholder for other functions to keep code running ---
-    function setGame(g, btn) { activeGame = g; render(); }
+    function setGame(g, btn) {
+    activeGame = g;
+    document.querySelectorAll('.game-btn').forEach(b => {
+        b.classList.remove('active');
+        if (b.id !== btn.id) b.style.opacity = '0.5'; // grisear el no seleccionado
+        else b.style.opacity = '1';
+    });
+    btn.classList.add('active');
+    renderMoves();
+}
     function setMoveMode(mode, btn) {
         moveMode = mode;
         // Update active class on buttons
@@ -765,13 +786,18 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
     async function renderMoves() {
     const body = document.getElementById('movesBody');
     if (!currentPoke || !currentPoke.poke) return;
-    
+
     body.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:20px;'>Loading moves...</td></tr>";
 
     const poke = currentPoke.poke;
-    const vGroup = activeGame === 'sv' ? 'scarlet-violet' : 'sword-shield';
 
-    // 1. Filter moves based on the selected mode
+    // Determinar el grupo de versiones según el juego seleccionado
+    let vGroup = '';
+    if (activeGame === 'sv') vGroup = 'scarlet-violet';
+    else if (activeGame === 'la') vGroup = 'legends-arceus';
+    else vGroup = 'sword-shield';
+
+    // Filtrar movimientos según version_group y moveMode
     let movesList = poke.moves.filter(m => {
         return m.version_group_details.some(v => {
             const matchVersion = v.version_group.name === vGroup;
@@ -780,7 +806,7 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
         });
     });
 
-    // 2. Sort
+    // Ordenar por nivel si aplica
     if (moveMode === 'level-up' || moveMode === 'all') {
         movesList.sort((a, b) => {
             const aDet = a.version_group_details.find(v => v.version_group.name === vGroup && v.move_learn_method.name === 'level-up');
@@ -790,18 +816,18 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
     }
 
     if (movesList.length === 0) {
-        body.innerHTML = `<tr><td colspan='4' style='text-align:center; padding:20px;'>No moves found.</td></tr>`;
+        body.innerHTML = `<tr><td colspan='4' style='text-align:center; padding:20px;'>No moves found for this game.</td></tr>`;
         return;
     }
 
+    // Obtener datos de cada movimiento y renderizar
     let html = "";
     try {
         const movePromises = movesList.slice(0, 80).map(async (m) => {
             const res = await fetch(m.move.url);
             const data = await res.json();
-            
-            // FIND THE SPECIFIC DETAIL FOR THE CURRENT MODE
-            // If mode is 'all', we look for level-up first to show the number
+
+            // Detalle del movimiento según el modo
             let detail;
             if (moveMode === 'all') {
                 detail = m.version_group_details.find(v => v.version_group.name === vGroup && v.move_learn_method.name === 'level-up') 
@@ -810,15 +836,9 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
                 detail = m.version_group_details.find(v => v.version_group.name === vGroup && v.move_learn_method.name === moveMode);
             }
 
-            // FORCE DASH FOR TM AND EGG MODES
             let displayLvl = '—';
-            if (detail && detail.move_learn_method.name === 'level-up') {
-                displayLvl = detail.level_learned_at;
-            }
-            // Additional safety: if user clicked 'machine', force it to dash
-            if (moveMode === 'machine' || moveMode === 'egg') {
-                displayLvl = '—';
-            }
+            if (detail && detail.move_learn_method.name === 'level-up') displayLvl = detail.level_learned_at;
+            if (moveMode === 'machine' || moveMode === 'egg') displayLvl = '—';
 
             return {
                 lvl: displayLvl,
@@ -832,7 +852,6 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
         const moveDataResults = await Promise.all(movePromises);
 
         moveDataResults.forEach(m => {
-            if (!m) return;
             const catIcon = `<span class="cat-icon cat-${m.category}"></span>`;
             html += `
                 <tr>
@@ -851,9 +870,10 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
 
         body.innerHTML = html;
     } catch (err) {
+        console.error(err);
         body.innerHTML = "<tr><td colspan='4'>Error loading moves.</td></tr>";
     }
-}
+    }
 
     // Generar las filas de la tabla con los movimientos
     const movesBody = document.getElementById('movesBody');
@@ -1018,4 +1038,3 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
-
