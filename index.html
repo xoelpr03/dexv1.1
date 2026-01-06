@@ -180,17 +180,17 @@
     .evo-img { width: 70px; height: 70px; }
 /* --- CLEAN EMOJI SHINY BUTTON --- */
 .shiny-btn { 
-    /* OFF STATE: Small and Grey */
-    filter: grayscale(1);        /* Grey color */
-    opacity: 1;                  /* Set to 1 if you don't want it translucent */
+    /* OFF STATE: Grey and Dull */
+    filter: grayscale(1) brightness(0.7); 
+    opacity: 0.8; /* Optional: makes it look slightly 'disabled' */
     
-    /* Structure */
+    /* Layout/Structure */
     font-size: 32px; 
     background: none; 
     border: none; 
     cursor: pointer;
     padding: 10px;
-    transition: transform 0.3s ease, filter 0.3s ease;
+    transition: filter 0.3s ease, opacity 0.3s ease; /* Smooth color fade */
     user-select: none;
     display: flex;
     align-items: center;
@@ -198,8 +198,9 @@
 }
 
 .shiny-btn.active { 
-    /* ON STATE: Big and Glowing */
-    filter: grayscale(0) drop-shadow(0 0 15px #ffcb05);
+    /* ON STATE: Full Color and Glowing */
+    filter: grayscale(0) brightness(1) drop-shadow(0 0 12px #ffcb05);
+    opacity: 1;
 }
 
 /* Back button matching the clean silver look */
@@ -898,6 +899,7 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
 
