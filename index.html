@@ -178,44 +178,50 @@
     #evoChain { display: flex; flex-direction: row; justify-content: center; align-items: center; width: 100%; overflow-x: auto; padding: 10px 0; }
     .evo-stage-col { display: flex; flex-direction: column; align-items: center; text-align: center; }
     .evo-img { width: 70px; height: 70px; }
-/* --- CLEAN EMOJI SHINY BUTTON --- */
-.shiny-btn {
-    /* 1. LOCK THE SIZE: Use fixed width/height to prevent any jumping */
-    width: 60px;
-    height: 60px;
-    font-size: 32px;
-    
-    /* 2. RESET DEFAULTS: Remove all standard button behaviors */
-    background: transparent;
-    border: none;
-    outline: none;
+/* --- STABLE EMOJI SHINY BUTTON --- */
+.shiny-btn { 
+    font-size: 32px; 
+    background: none; 
+    border: none; 
     cursor: pointer;
-    padding: 0;
-    margin: 0;
-    display: flex;
+    padding: 10px;
+    /* Removed rotate to prevent skewing */
+    transition: transform 0.2s ease, filter 0.3s ease;
+    filter: grayscale(1) opacity(0.4); 
+    user-select: none;
+    display: inline-flex; /* Changed to inline-flex for tighter centering */
     align-items: center;
     justify-content: center;
-    
-    /* 3. OFF STATE: Grey and flat */
-    filter: grayscale(1) opacity(0.5);
-    transition: filter 0.3s ease; /* Only color and glow change */
-    
-    /* Prevent blue highlight on mobile tap */
-    -webkit-tap-highlight-color: transparent;
+    line-height: 1; /* Prevents vertical shifting */
+    vertical-align: middle;
+    outline: none;
+    -webkit-tap-highlight-color: transparent; /* Fixes blue box on mobile tap */
 }
 
-.shiny-btn.active {
-    /* 4. ON STATE: High contrast and glow, NO scale/transform */
-    filter: grayscale(0) opacity(1) drop-shadow(0 0 8px #ffcb05) drop-shadow(0 0 2px #ffcb05);
+.shiny-btn:hover {
+    /* Only scale, no rotation to keep it stable */
+    transform: scale(1.1);
+    filter: grayscale(0.5) opacity(0.8);
 }
 
-/* 5. OVERRIDE: Prevent any "grow" effects on click/hover */
-.shiny-btn:hover, 
-.shiny-btn:active, 
-.shiny-btn:focus {
-    transform: none !important;
-    background: transparent !important;
+.shiny-btn:active {
+    /* Shrink slightly when pressed to give a "physical button" feel */
+    transform: scale(0.9);
 }
+
+.shiny-btn.active { 
+    filter: grayscale(0) opacity(1) drop-shadow(0 0 10px #ffcb05);
+    transform: scale(1.1);
+}
+
+/* Fix for the header container to prevent the emoji from jumping */
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 50px; /* Ensures the row height stays consistent */
+}
+
 
 /* Back button matching the clean silver look */
 .back-btn { 
@@ -913,6 +919,7 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
 
