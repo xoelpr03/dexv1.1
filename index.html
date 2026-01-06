@@ -178,7 +178,51 @@
     #evoChain { display: flex; flex-direction: row; justify-content: center; align-items: center; width: 100%; overflow-x: auto; padding: 10px 0; }
     .evo-stage-col { display: flex; flex-direction: column; align-items: center; text-align: center; }
     .evo-img { width: 70px; height: 70px; }
+/* --- CLEAN EMOJI SHINY BUTTON --- */
+.shiny-btn { 
+    font-size: 32px; /* Large enough to tap easily */
+    background: none; 
+    border: none; 
+    cursor: pointer;
+    padding: 10px;
+    transition: transform 0.2s ease, filter 0.3s ease;
+    filter: grayscale(1) opacity(0.4); /* Faded out when not shiny */
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+.shiny-btn:hover {
+    transform: scale(1.2) rotate(10deg);
+    filter: grayscale(0.5) opacity(0.8);
+}
+
+.shiny-btn.active { 
+    filter: grayscale(0) opacity(1) drop-shadow(0 0 10px #ffcb05);
+    transform: scale(1.1);
+}
+
+/* Back button matching the clean silver look */
+.back-btn { 
+    background: transparent;
+    border: 1px solid var(--silver-mid);
+    padding: 8px 16px; 
+    border-radius: 12px; 
+    font-weight: 800; 
+    color: var(--silver-dark); 
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: var(--silver-light);
+    color: var(--accent);
+    border-color: var(--accent);
+}
     /* --- TABLES --- */
     table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 15px; }
     th { color: var(--silver-dark); text-transform: uppercase; letter-spacing: 1px; font-size: 10px; text-align: left; padding: 8px; }
@@ -734,6 +778,7 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
 
