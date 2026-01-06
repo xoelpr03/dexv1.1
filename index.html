@@ -509,8 +509,7 @@
 function applyDynamicTheme(types) {
     const bgEl = document.body;
 
-    // Quitar cualquier clase que ponga el fondo fijo
-    bgEl.classList.remove('theme-sv');
+    body.className = '';
 
     if (!types || types.length === 0) {
         bgEl.style.background = '#ffffff';
@@ -980,5 +979,6 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
