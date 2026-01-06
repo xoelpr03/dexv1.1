@@ -632,12 +632,10 @@
     <div id="pokeTypes" style="margin-top: 10px;"></div>
     <div id="stats-area" style="margin-top: 20px; text-align: left; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0;"></div>
 
-    <div id="dexEntryBox" style="margin-top: 20px; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: left; background: #fff;">
-    <div style="font-weight: 900; font-size: 10px; color: #64748b; margin-bottom: 8px; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center;">
-        <span>POKEDEX ENTRY</span>
-        
+    <div id="dexEntryBox" style="margin-top: 20px; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: left; background: #ffffff;">
+    <div style="font-weight: 900; font-size: 10px; color: #64748b; margin-bottom: 8px; letter-spacing: 1px;">
+        POKEDEX ENTRY
     </div>
-
     <div id="dexEntryText" style="font-size: 14px; line-height: 1.5; color: #1e293b; font-style: italic;">
         —
     </div>
@@ -1222,40 +1220,49 @@ function loadRandomPokemon() {
     loadPokemon(randomId.toString());
 }
 
+// 1. The Function
 async function loadRandomDexEntry(pokemonId) {
     const box = document.getElementById("dexEntryText");
-    
-    // Safety check in case the element isn't in the DOM yet
-    if (!box) return;
-
-    box.innerHTML = `<span style="color: #cbd5e1;">Loading entry...</span>`;
+    if (!box) return; // Exit if the HTML box isn't found
 
     try {
         const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`);
         const data = await res.json();
+        const enEntries = data.flavor_text_entries.filter(e => e.language.name === "en");
 
-        // Filter for English entries only
-        const entries = data.flavor_text_entries.filter(
-            e => e.language.name === "en"
-        );
-
-        if (entries.length === 0) {
-            box.textContent = "No entry available for this Pokémon.";
-            return;
+        if (enEntries.length > 0) {
+            const random = enEntries[Math.floor(Math.random() * enEntries.length)];
+            box.textContent = random.flavor_text.replace(/\n|\f/g, " ");
+        } else {
+            box.textContent = "No entry available.";
         }
+    } catch (err) {
+        box.textContent = "No entry available.";
+    }
+}
 
-        // Pick a random entry
-        const randomEntry = entries[Math.floor(Math.random() * entries.length)];
+// 2. The Trigger (Put this inside your loadPokemon function)
+async function loadPokemon(name) {
+    try {
+        /* ... your existing fetch logic ... */
 
-        // Clean up text: replace special characters (\f, \n) with spaces
-        box.textContent = randomEntry.flavor_text.replace(/\n|\f/g, " ");
+        // Ensure currentPoke is set
+        currentPoke = { species: speciesData, poke: pokeData, evo: evoData };
+        
+        // Show the card
+        document.getElementById('display-card').style.display = 'block';
+
+        await render(); // Draw images/stats
+        
+        // Load the dex entry!
+        loadRandomDexEntry(speciesData.id);
 
     } catch (err) {
-        console.error("Dex Entry Error:", err);
-        box.textContent = "No entry available.";
+        console.error(err);
     }
 }
 
 </script>
 </body>
 </html>
+
