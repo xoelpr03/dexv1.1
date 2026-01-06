@@ -660,23 +660,78 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
 
     // --- SEARCH LOGIC ---
     function setupSearch(id, sugId, list, cb) {
-        const inp = document.getElementById(id), sug = document.getElementById(sugId), goBtn = document.getElementById('goBtn');
-        inp.oninput = () => {
-            const val = inp.value.toLowerCase();
-            sug.innerHTML = "";
-            if(!val) { sug.style.display = "none"; return; }
-            const matches = list.filter(p => p.name.includes(val) || p.id.toString() === val).slice(0, 10);
-            sug.style.display = matches.length ? "block" : "none";
-            matches.forEach(m => {
-                const d = document.createElement('div');
-                d.className = "list-item";
-                d.innerHTML = `<span style="color:#94a3b8; font-weight:bold; margin-right:10px;">#${m.id}</span>${cap(m.name)}`;
-                d.onclick = () => { cb(m.name); sug.style.display="none"; inp.value=""; };
-                sug.appendChild(d);
-            });
-        };
-        goBtn.onclick = () => { if(inp.value) cb(inp.value); };
+    const inp = document.getElementById(id),
+          sug = document.getElementById(sugId),
+          goBtn = document.getElementById('goBtn');
+
+    let selectedIndex = -1; // para controlar qué item está seleccionado
+
+    inp.oninput = () => {
+        const val = inp.value.toLowerCase();
+        sug.innerHTML = "";
+        selectedIndex = -1;
+
+        if(!val) { 
+            sug.style.display = "none"; 
+            return; 
+        }
+
+        const matches = list.filter(p => p.name.includes(val) || p.id.toString() === val).slice(0, 10);
+        sug.style.display = matches.length ? "block" : "none";
+
+        matches.forEach((m, i) => {
+            const d = document.createElement('div');
+            d.className = "list-item";
+            d.innerHTML = `<span style="color:#94a3b8; font-weight:bold; margin-right:10px;">#${m.id}</span>${cap(m.name)}`;
+            d.onclick = () => { 
+                cb(m.name); 
+                sug.style.display="none"; 
+                inp.value=""; 
+            };
+            sug.appendChild(d);
+        });
+    };
+
+    // click normal en el botón
+    goBtn.onclick = () => { if(inp.value) cb(inp.value); };
+
+    // control con teclado
+    inp.onkeydown = (e) => {
+        const items = sug.querySelectorAll('.list-item');
+        if (!items.length) return;
+
+        if(e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = (selectedIndex + 1) % items.length;
+            updateSelection();
+        } else if(e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+            updateSelection();
+        } else if(e.key === 'Enter') {
+            e.preventDefault();
+            if(selectedIndex >= 0) {
+                items[selectedIndex].click();
+                selectedIndex = -1;
+            } else if(inp.value) {
+                cb(inp.value);
+            }
+        }
+    };
+
+    function updateSelection() {
+        const items = sug.querySelectorAll('.list-item');
+        items.forEach((it, idx) => {
+            if(idx === selectedIndex) {
+                it.classList.add('selected');
+                it.scrollIntoView({ block: 'nearest' });
+            } else {
+                it.classList.remove('selected');
+            }
+        });
     }
+}
+
 
     function toggleShiny() {
         isShiny = !isShiny;
@@ -887,3 +942,4 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
 </body>
 
 </html>
+
