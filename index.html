@@ -669,13 +669,14 @@
     </div>
 </div>
 
-           <!-- Evolution Chain Wrapper -->
 <div id="evoWrapper" style="
     background: #f8fafc;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
     padding: 15px;
     margin-top: 20px;
+    width: 100%;
+    box-sizing: border-box;
 ">
     <span style="
         font-size: 11px;
@@ -684,9 +685,21 @@
         display: block;
         margin-bottom: 12px;
         letter-spacing: 1px;
+        text-align: center;
     ">EVOLUTION CHAIN</span>
-        <!-- JS pondrá aquí los Pokémon de la cadena -->
-    </div>
+    
+    <div id="evoChain" style="
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0px; 
+        align-items: center;
+        /* This centers the content if it fits, but allows scrolling if it doesn't */
+        justify-content: safe center; 
+        padding: 5px 0;
+        -webkit-overflow-scrolling: touch; /* Smooth scroll on mobile */
+    ">
+        </div>
 </div>
 
             <!-- Moves Table -->
@@ -1100,23 +1113,18 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
         `;
         movesBody.appendChild(row);
     });
-    async function renderEvoChain(chain) {
+async function renderEvoChain(chain) {
     const container = document.getElementById('evoChain');
+    if (!container) return;
+    
     container.innerHTML = ""; 
-    // Maintains centering and horizontal scroll if the chain is long (e.g., Eevee)
-    container.style.cssText = `
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        align-items: center;
-        overflow-x: auto;
-        padding: 10px 0;
-        gap: 0;
-        width: 100%;
-    `;
+    // Re-enforce the centering logic via JS
+    container.style.display = "flex";
+    container.style.justifyContent = "center"; 
+    container.style.alignItems = "center";
 
     await renderBranch(chain, container);
+}
 
     async function renderBranch(stage, targetContainer) {
         const column = document.createElement('div');
@@ -1266,6 +1274,7 @@ async function loadRandomDexEntry(pokemonId) {
 </script>
 </body>
 </html>
+
 
 
 
