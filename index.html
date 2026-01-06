@@ -649,6 +649,18 @@
         <!-- Right Column -->
         <div style="flex:1; min-width: 300px;">
             
+            <!-- Evolution Chain -->
+            <div id="evoChain" style="
+    display: flex; 
+    overflow-x: auto; 
+    gap: 3px;           /* menos espacio entre Pokémon */
+    margin-top: 10px; 
+    align-items: center; 
+    justify-content: center; /* centra la cadena */
+    padding: 5px 0;     /* menos padding arriba/abajo */
+    scrollbar-width: none;">
+</div>
+
 <div id="abilitiesWrapper" style="
     background: #f8fafc;      
     border-radius: 12px;      
@@ -667,39 +679,6 @@
     <div id="abilitiesArea" style="font-size: 14px; line-height: 1.4; margin-bottom: 0;">
         <!-- JS pondrá aquí las habilidades -->
     </div>
-</div>
-
-<div id="evoWrapper" style="
-    background: #f8fafc;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    padding: 15px;
-    margin-top: 20px;
-    width: 100%;
-    box-sizing: border-box;
-">
-    <span style="
-        font-size: 11px;
-        font-weight: 900;
-        color: #64748b;
-        display: block;
-        margin-bottom: 12px;
-        letter-spacing: 1px;
-        text-align: center;
-    ">EVOLUTION CHAIN</span>
-    
-    <div id="evoChain" style="
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 0px; 
-        align-items: center;
-        /* This centers the content if it fits, but allows scrolling if it doesn't */
-        justify-content: safe center; 
-        padding: 5px 0;
-        -webkit-overflow-scrolling: touch; /* Smooth scroll on mobile */
-    ">
-        </div>
 </div>
 
             <!-- Moves Table -->
@@ -1113,18 +1092,23 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
         `;
         movesBody.appendChild(row);
     });
-async function renderEvoChain(chain) {
+    async function renderEvoChain(chain) {
     const container = document.getElementById('evoChain');
-    if (!container) return;
-    
     container.innerHTML = ""; 
-    // Re-enforce the centering logic via JS
-    container.style.display = "flex";
-    container.style.justifyContent = "center"; 
-    container.style.alignItems = "center";
+    // Maintains centering and horizontal scroll if the chain is long (e.g., Eevee)
+    container.style.cssText = `
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        align-items: center;
+        overflow-x: auto;
+        padding: 10px 0;
+        gap: 0;
+        width: 100%;
+    `;
 
     await renderBranch(chain, container);
-}
 
     async function renderBranch(stage, targetContainer) {
         const column = document.createElement('div');
@@ -1274,8 +1258,3 @@ async function loadRandomDexEntry(pokemonId) {
 </script>
 </body>
 </html>
-
-
-
-
-
