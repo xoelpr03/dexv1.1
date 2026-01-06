@@ -181,7 +181,6 @@
 /* --- CLEAN EMOJI SHINY BUTTON --- */
 .shiny-btn { 
     /* OFF STATE: Small and Grey */
-    transform: scale(1);       /* Force it to be smaller */
     filter: grayscale(1);        /* Grey color */
     opacity: 1;                  /* Set to 1 if you don't want it translucent */
     
@@ -200,7 +199,6 @@
 
 .shiny-btn.active { 
     /* ON STATE: Big and Glowing */
-    transform: scale(1.2);       /* Grow 20% larger than original */
     filter: grayscale(0) drop-shadow(0 0 15px #ffcb05);
 }
 
@@ -900,6 +898,7 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
 
