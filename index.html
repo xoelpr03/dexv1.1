@@ -511,6 +511,30 @@
     background-color: #e2e8f0;
 }
 }
+
+/* Container for the entries */
+.dex-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* The actual text styling */
+#dexScarlet, #dexViolet, #dexPLA {
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 500;
+    font-style: italic;
+    display: flex;
+    align-items: center; /* Centers text vertically against the circle */
+}
+
+/* Version circles styling */
+.dex-circle {
+    flex-shrink: 0; /* Prevents the circle from squishing if text is long */
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+}
         
         
     </style>
@@ -599,14 +623,27 @@
     <div class="layout-grid" style="display:flex; gap:20px; flex-wrap: wrap;">
         
         <!-- Left Column -->
-        <div style="flex:1; text-align: center; min-width: 250px;">
-            <div id="dexNumber" style="font-weight: 900; color: #94a3b8; font-size: 20px; margin-bottom:10px;">#0000</div>
-            <img id="pokeImg" src="" style="width: 200px; max-width: 90%; height: auto; display:block; margin: auto;">
-            
-            <div id="nav-pokes" style="display:flex; justify-content: space-between; align-items: center; margin-top: 10px;"></div>
-            <div id="pokeTypes" style="margin-top: 10px;"></div>
-            <div id="stats-area" style="margin-top: 20px; text-align: left; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0;"></div>
-        </div>
+<div style="flex:1; text-align: center; min-width: 250px;">
+
+    <div id="dexNumber" style="font-weight: 900; color: #94a3b8; font-size: 20px; margin-bottom:10px;">#0000</div>
+    <img id="pokeImg" src="" style="width: 200px; max-width: 90%; height: auto; display:block; margin: auto;">
+
+    <div id="nav-pokes" style="display:flex; justify-content: space-between; align-items: center; margin-top: 10px;"></div>
+    <div id="pokeTypes" style="margin-top: 10px;"></div>
+    <div id="stats-area" style="margin-top: 20px; text-align: left; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0;"></div>
+
+    <div id="dexEntryBox" style="margin-top: 20px; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: left; background: #fff;">
+    <div style="font-weight: 900; font-size: 10px; color: #64748b; margin-bottom: 8px; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center;">
+        <span>POKEDEX ENTRY</span>
+        
+    </div>
+
+    <div id="dexEntryText" style="font-size: 14px; line-height: 1.5; color: #1e293b; font-style: italic;">
+        —
+    </div>
+</div>
+
+</div>
         
         <!-- Right Column -->
         <div style="flex:1; min-width: 300px;">
@@ -672,6 +709,8 @@
     let allPokes = [], currentPoke = null, isShiny = false, activeVer = 'scarlet', activeGame = 'sv', moveMode = 'all';
     const typeColors = { grass: '#7AC74C', fire: '#EE8130', water: '#6390F0', bug: '#A6B91A', normal: '#A8A77A', poison: '#A33EA1', electric: '#F7D02C', ground: '#E2BF65', fairy: '#D685AD', fighting: '#C22E28', psychic: '#F95587', rock: '#B6A136', ghost: '#735797', ice: '#96D9D6', dragon: '#6F35FC', dark: '#705746', steel: '#B7B7CE', flying: '#A98FF3' };
     const cap = s => s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
+    const dexButtons = document.querySelectorAll('.dex-btn');
+    const dexTextDiv = document.getElementById('dexText');
     
 function miniSearch() {
     const input = document.getElementById('miniSearchInput');
@@ -732,37 +771,41 @@ function getStatColor(v) {
     }
 
     // --- REPAIRED LOAD FUNCTION ---
-    async function loadPokemon(name) {
+   async function loadPokemon(name) {
+    try {
+        let pokeData, speciesData;
+        
         try {
-            // First try to get basic data to find the species
-            let pokeData, speciesData;
-            
-            try {
-                // Try fetching as a specific variety/form first
-                pokeData = await (await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`)).json();
-                speciesData = await (await fetch(pokeData.species.url)).json();
-            } catch (e) {
-                // If that fails, try fetching as a species (default form)
-                speciesData = await (await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name.toLowerCase()}`)).json();
-                const defaultUrl = speciesData.varieties.find(v => v.is_default).pokemon.url;
-                pokeData = await (await fetch(defaultUrl)).json();
-            }
-
-            const evoData = await (await fetch(speciesData.evolution_chain.url)).json();
-
-            currentPoke = { species: speciesData, poke: pokeData, evo: evoData };
-            
-            document.getElementById('search-section').style.display = 'none';
-            document.getElementById('display-card').style.display = 'block';
-            document.body.classList.remove('menu-active');
-            
-            render();
-            window.scrollTo(0, 0);
-        } catch (err) {
-            console.error(err);
-            alert("Pokémon or Form not found!");
+            // Try fetching as a specific variety/form first
+            pokeData = await (await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`)).json();
+            speciesData = await (await fetch(pokeData.species.url)).json();
+        } catch (e) {
+            // If that fails, try fetching as a species (default form)
+            speciesData = await (await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name.toLowerCase()}`)).json();
+            const defaultUrl = speciesData.varieties.find(v => v.is_default).pokemon.url;
+            pokeData = await (await fetch(defaultUrl)).json();
         }
+
+        const evoData = await (await fetch(speciesData.evolution_chain.url)).json();
+
+        currentPoke = { species: speciesData, poke: pokeData, evo: evoData };
+        
+        document.getElementById('search-section').style.display = 'none';
+        document.getElementById('display-card').style.display = 'block';
+        document.body.classList.remove('menu-active');
+        
+        // Render the main UI
+        await render(); 
+        
+        // Load the random entry using the species ID
+        loadRandomDexEntry(speciesData.id);
+
+        window.scrollTo(0, 0);
+    } catch (err) {
+        console.error(err);
+        alert("Pokémon or Form not found!");
     }
+}
 
     async function render() {
     if (!currentPoke) return;
@@ -1179,7 +1222,40 @@ function loadRandomPokemon() {
     loadPokemon(randomId.toString());
 }
 
+async function loadRandomDexEntry(pokemonId) {
+    const box = document.getElementById("dexEntryText");
+    
+    // Safety check in case the element isn't in the DOM yet
+    if (!box) return;
+
+    box.innerHTML = `<span style="color: #cbd5e1;">Loading entry...</span>`;
+
+    try {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`);
+        const data = await res.json();
+
+        // Filter for English entries only
+        const entries = data.flavor_text_entries.filter(
+            e => e.language.name === "en"
+        );
+
+        if (entries.length === 0) {
+            box.textContent = "No entry available for this Pokémon.";
+            return;
+        }
+
+        // Pick a random entry
+        const randomEntry = entries[Math.floor(Math.random() * entries.length)];
+
+        // Clean up text: replace special characters (\f, \n) with spaces
+        box.textContent = randomEntry.flavor_text.replace(/\n|\f/g, " ");
+
+    } catch (err) {
+        console.error("Dex Entry Error:", err);
+        box.textContent = "No entry available.";
+    }
+}
+
 </script>
 </body>
 </html>
-
