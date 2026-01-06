@@ -562,15 +562,45 @@
         document.getElementById('pCat').innerText = species.genera.find(g => g.language.name==='en')?.genus || "";
         
         // Render Stats (The fix for dynamic stats is here)
-        let statsHtml = "";
-        poke.stats.forEach(s => {
-            const shortName = s.stat.name.replace('special-', 'S').substring(0,3).toUpperCase();
-            statsHtml += `<div class="stat-row">
-                <div style="width:35px">${shortName}</div>
-                <div style="width:35px; text-align:right">${s.base_stat}</div>
-                <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${(s.base_stat/255)*100}%; background:${getStatColor(s.base_stat)}"></div></div>
-            </div>`;
-        });
+       let statsHtml = "";
+let baseStatTotal = 0;
+
+poke.stats.forEach(s => {
+    baseStatTotal += s.base_stat;
+
+    const shortName = s.stat.name
+        .replace('special-', 'S')
+        .substring(0,3)
+        .toUpperCase();
+
+    statsHtml += `
+    
+        <div class="stat-row">
+            <div style="width:35px">${shortName}</div>
+            <div style="width:35px; text-align:right">${s.base_stat}</div>
+            <div class="stat-bar-bg">
+                <div class="stat-bar-fill"
+                     style="width:${(s.base_stat/255)*100}%;
+                            background:${getStatColor(s.base_stat)}">
+                </div>
+            </div>
+        </div>
+    `;
+});
+statsHtml += `
+    <div style="
+        margin-top:12px;
+        padding-top:10px;
+        border-top:1px solid #e2e8f0;
+        font-weight:900;
+        font-size:13px;
+        display:flex;
+        justify-content:space-between;
+    ">
+        <span>BST</span>
+        <span>${baseStatTotal}</span>
+    </div>
+`;
         document.getElementById('stats-area').innerHTML = statsHtml;
 
        // Render Abilities
