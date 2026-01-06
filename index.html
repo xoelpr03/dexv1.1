@@ -61,7 +61,7 @@
 
     .dex-title { 
         margin: 0 0 20px 0; 
-        background: linear-gradient(90deg, #3c5aa6, #ffcb05); 
+        background: linear-gradient(69deg, #568053, #f0c000); 
         -webkit-background-clip: text; 
         -webkit-text-fill-color: transparent; 
         font-size: clamp(24px, 8vw, 38px); 
@@ -413,12 +413,12 @@
     }
 
     /* 6. Evolution Chain: Horizontal Swipe */
-    #evoChain {
-        justify-content: flex-start; /* Start from left for swiping */
-        gap: 20px;
-        padding-bottom: 15px;
-        -webkit-overflow-scrolling: touch; /* Smooth swipe on iPhone */
-    }
+   #evoChain {
+    display: flex;
+    gap: 3px;                  /* menos espacio entre Pokémon */
+    justify-content: center;    /* centrado horizontal */
+    align-items: center;        /* centrado vertical */
+}
 
     /* 7. Move Table Optimization */
     .table-wrapper {
@@ -445,6 +445,71 @@
         border-radius: 24px 24px 0 0;
         border-bottom: 1px solid var(--silver-mid);
     }
+
+    .mini-search-container {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+#miniSearchInput {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    font-size: 12px;
+    width: 140px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.8);
+    transition: border-color 0.2s;
+}
+
+#miniSearchInput:focus {
+    border-color: var(--accent);
+}
+
+#miniSearchBtn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+#miniSearchBtn:hover {
+    opacity: 0.8;
+}
+
+#pokeSuggsMini {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    z-index: 1000;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    display: none;
+    overflow-y: auto;
+    max-height: 250px;
+    margin-top: 5px;
+}
+
+#pokeSuggsMini .list-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+}
+
+#pokeSuggsMini .list-item:hover, 
+#pokeSuggsMini .list-item.selected {
+    background-color: #e2e8f0;
+}
 }
         
         
@@ -459,91 +524,148 @@
                 <div class="search-wrapper">
                     <input type="text" id="pokeIn" class="nav-input" placeholder="Name or ID..." autocomplete="off">
                     <button class="search-btn" id="goBtn">GO</button>
-                    <div id="pokeSuggs" class="suggestions"></div>  <!-- Contenedor para sugerencias -->
+<button id="randomBtn" onclick="loadRandomPokemon()" 
+        style="
+            font-size: 18px;         /* tamaño del emoji */
+            padding: 5px 10px;       /* compacto */
+            border-radius: 12px;     /* redondeado como otros botones */
+            border: none; 
+            background: #f8fafc; 
+            cursor: pointer;
+            transition: transform 0.1s;
+        " 
+        onmouseover="this.style.transform='scale(1.2)'" 
+        onmouseout="this.style.transform='scale(1)'">
+        🎲
+    </button>                    <div id="pokeSuggs" class="suggestions"></div>  <!-- Contenedor para sugerencias -->
                 </div>
             </div>
             <div class="creator-credit">created by ξawsjake</div>
         </div>
     </div>
 
-    <div id="display-card">
-        <div id="formsArea" style="background: #f8fafc; padding: 15px; border-radius: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0; display: none;">
-            <span style="font-size:11px; font-weight:900; color:#94a3b8; display: block; margin-bottom: 12px; letter-spacing: 1px;">AVAILABLE VARIANTS</span>
-            <div id="formsList" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
-        </div>
-
-        <div class="header-flex">
-            <button class="back-btn" onclick="goBack()">← BACK</button>
-            <div class="game-switcher">
-                <button id="btn-sv" 
-                        class="game-btn active" 
-                        style="background: linear-gradient(to right, var(--scarlet), var(--violet)); 
-                        border-radius: 50px; 
-                        border: none; 
-                        padding: 10px 20px; 
-                        color: white; 
-                        cursor: pointer; 
-                        font-weight: bold;" 
-                        onclick="setGame('sv', this)">
-                        S / V
-                </button>
-                <button id="btn-la"
-                     class="game-btn disabled" 
-                    style="background: linear-gradient(to right, #ff9900, #ffcc00); 
-        border-radius: 50px; 
-        border: none; 
-        padding: 10px 20px; 
-        color: white; 
-        cursor: pointer; 
-        font-weight: bold;" 
-        onclick="setGame('la', this)">
-        LA
-</button>
-            </div>
-            <button id="shinySparkle" class="shiny-btn" onclick="toggleShiny()">✨</button>
-        </div>
-
-        <div class="layout-grid">
-            <div style="text-align: center; position: relative;">
-                <div id="dexNumber" style="font-weight: 900; color: #94a3b8; font-size: 20px;">#0000</div>
-                <img id="pokeImg" src="" style="width: 250px; max-width: 90%; height: auto; display:block; margin: auto;">
-                
-                <div id="nav-pokes" style="display:flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                    <!-- JS pondrá los botones -->
-                </div>
-                
-                <div id="pokeTypes" style="margin-top: 10px;"></div>
-                <div id="stats-area" style="margin-top: 20px; text-align: left; background: #f8fafc; padding: 15px; border-radius: 12px;"></div>
-            </div>
-            
-            <div>
-                <h2 id="pokeName" style="margin: 0; font-size: 32px; text-transform: capitalize;"></h2>
-                <div id="pCat" style="color: #64748b; font-weight: bold; font-size: 14px; margin-bottom: 15px;"></div>
-                
-                <div style="background:#f1f5f9; padding:15px; border-radius:12px; margin-bottom:20px;">
-                    <span style="font-size:10px; font-weight:900; color:#64748b">EVOLUTION CHAIN</span>
-                    <div id="evoChain" style="display:flex; overflow-x: auto; gap:15px; margin-top:10px; align-items: center; padding-bottom: 10px; scrollbar-width: thin;"></div>
-                </div>
-
-                <div id="abilitiesArea" style="font-size: 14px; line-height: 1.4;"></div>
-
-                <div style="margin-top:25px;">
-                    <div style="display:flex; gap:8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;">
-                        <button class="v-toggle" onclick="setMoveMode('level-up', this)">Level</button>
-                        <button class="v-toggle" onclick="setMoveMode('machine', this)">TM</button>
-                        <button class="v-toggle" onclick="setMoveMode('egg', this)">Egg</button>
-                        <button class="v-toggle active" onclick="setMoveMode('all', this)">All</button>
-                    </div>
-                    <div style="overflow-x: auto; border-radius: 12px; border: 1px solid #f1f5f9;">
-                        <table>
-                            <thead><tr><th>Lvl</th><th>Move</th><th>Type</th><th>Pwr</th></tr></thead>
-                            <tbody id="movesBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div id="display-card" style="background: white; border-radius: 18px; padding: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); max-width: 900px; margin: auto;">
+    
+    <!-- Search -->
+    <div class="search-wrapper" style="margin-bottom: 15px; max-width: 300px;">
+        <input type="text" id="miniSearchInput" class="nav-input" placeholder="Search Pokémon..." autocomplete="off">
+        <button class="search-btn" id="miniSearchBtn" onclick="miniSearch()">GO</button>
+<button id="randomBtn" onclick="loadRandomPokemon()" 
+        style="
+            font-size: 18px;         /* tamaño del emoji */
+            padding: 5px 10px;       /* compacto */
+            border-radius: 12px;     /* redondeado como otros botones */
+            border: none; 
+            background: #f8fafc; 
+            cursor: pointer;
+            transition: transform 0.1s;
+        " 
+        onmouseover="this.style.transform='scale(1.2)'" 
+        onmouseout="this.style.transform='scale(1)'">
+        🎲
+    </button>        <div id="pokeSuggsMini" class="suggestions"></div>
     </div>
+    <datalist id="pokeSuggestions"></datalist>
+
+    <!-- Forms / Variants -->
+    <div id="formsArea" style="padding: 15px; border-radius: 12px; margin-bottom: 20px; display: none; border: 1px solid #e2e8f0;">
+        <span style="font-size:11px; font-weight:900; color:#94a3b8; display: block; margin-bottom: 12px; letter-spacing: 1px;">AVAILABLE VARIANTS</span>
+        <div id="formsList" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+    </div>
+
+    <!-- Header Flex -->
+    <div class="header-flex" style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 20px;">
+        <button class="back-btn" onclick="goBack()">← BACK</button>
+        <div class="game-switcher">
+            <button id="btn-sv" 
+                    class="game-btn active" 
+                    style="background: linear-gradient(to right, var(--scarlet), var(--violet)); 
+                    border-radius: 50px; border: none; padding: 10px 20px; color: white; cursor: pointer; font-weight: bold;" 
+                    onclick="setGame('sv', this)">
+                    S / V
+            </button>
+            <button id="btn-la"
+                    class="game-btn" 
+                    style="background: linear-gradient(to right, #ff9900, #ffcc00); 
+                    border-radius: 50px; border: none; padding: 10px 20px; color: white; cursor: pointer; font-weight: bold;" 
+                    onclick="setGame('la', this)">
+                    LA
+            </button>
+        </div>
+        <button id="shinySparkle" class="shiny-btn" onclick="toggleShiny()">✨</button>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="layout-grid" style="display:flex; gap:20px; flex-wrap: wrap;">
+        
+        <!-- Left Column -->
+        <div style="flex:1; text-align: center; min-width: 250px;">
+            <div id="dexNumber" style="font-weight: 900; color: #94a3b8; font-size: 20px; margin-bottom:10px;">#0000</div>
+            <img id="pokeImg" src="" style="width: 200px; max-width: 90%; height: auto; display:block; margin: auto;">
+            
+            <div id="nav-pokes" style="display:flex; justify-content: space-between; align-items: center; margin-top: 10px;"></div>
+            <div id="pokeTypes" style="margin-top: 10px;"></div>
+            <div id="stats-area" style="margin-top: 20px; text-align: left; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0;"></div>
+        </div>
+        
+        <!-- Right Column -->
+        <div style="flex:1; min-width: 300px;">
+            <h2 id="pokeName" style="margin: 0; font-size: 32px; text-transform: capitalize;"></h2>
+            <div id="pCat" style="color: #64748b; font-weight: bold; font-size: 14px; margin-bottom: 15px;"></div>
+            
+            <!-- Evolution Chain -->
+            <div id="evoChain" style="
+    display: flex; 
+    overflow-x: auto; 
+    gap: 3px;           /* menos espacio entre Pokémon */
+    margin-top: 10px; 
+    align-items: center; 
+    justify-content: center; /* centra la cadena */
+    padding: 5px 0;     /* menos padding arriba/abajo */
+    scrollbar-width: none;">
+</div>
+
+<div id="abilitiesWrapper" style="
+    background: #f8fafc;      
+    border-radius: 12px;      
+    border: 1px solid #e2e8f0; 
+    padding: 15px;
+    margin-top: 20px;
+">
+    <span style="
+        font-size: 11px; 
+        font-weight: 900; 
+        color: #64748b; 
+        display: block; 
+        margin-bottom: 12px; 
+        letter-spacing: 1px;
+    ">ABILITIES</span>
+    <div id="abilitiesArea" style="font-size: 14px; line-height: 1.4; margin-bottom: 0;">
+        <!-- JS pondrá aquí las habilidades -->
+    </div>
+</div>
+
+            <!-- Moves Table -->
+            <div style="margin-top:25px;">
+                <div style="display:flex; gap:8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;">
+                    <button class="v-toggle" onclick="setMoveMode('level-up', this)">Level</button>
+                    <button class="v-toggle" onclick="setMoveMode('machine', this)">TM</button>
+                    <button class="v-toggle" onclick="setMoveMode('egg', this)">Egg</button>
+                    <button class="v-toggle active" onclick="setMoveMode('all', this)">All</button>
+                </div>
+                <div style="overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0; margin-top:10px;">
+                    <table>
+                        <thead><tr><th>Lvl</th><th>Move</th><th>Type</th><th>Pwr</th></tr></thead>
+                        <tbody id="movesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
 </div>
 
 <script>
@@ -551,6 +673,18 @@
     const typeColors = { grass: '#7AC74C', fire: '#EE8130', water: '#6390F0', bug: '#A6B91A', normal: '#A8A77A', poison: '#A33EA1', electric: '#F7D02C', ground: '#E2BF65', fairy: '#D685AD', fighting: '#C22E28', psychic: '#F95587', rock: '#B6A136', ghost: '#735797', ice: '#96D9D6', dragon: '#6F35FC', dark: '#705746', steel: '#B7B7CE', flying: '#A98FF3' };
     const cap = s => s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
     
+function miniSearch() {
+    const input = document.getElementById('miniSearchInput');
+    const query = input.value.trim().toLowerCase();
+    
+    if (query) {
+        // This assumes your main function is named loadPokemon
+        loadPokemon(query);
+        // Clear the input after searching
+        input.value = "";
+    }
+}
+
 function applyDynamicTheme(types) {
     let primaryColor = "#3b82f6"; // Default blue
     let bg = "#ffffff";
@@ -586,6 +720,7 @@ function getStatColor(v) {
         const data = await (await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=1025')).json();
         allPokes = data.results.map((p, i) => ({ name: p.name, id: i + 1 }));
         setupSearch('pokeIn', 'pokeSuggs', allPokes, loadPokemon);
+        setupSearch('miniSearchInput', 'pokeSuggsMini', allPokes, loadPokemon);
     };
 
     function goBack() {
@@ -716,23 +851,45 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
     function renderFormsList() {
     const varieties = currentPoke.species.varieties;
     const list = document.getElementById('formsList');
+    const formsArea = document.getElementById('formsArea');
 
-    if (varieties.length <= 1) {
-        document.getElementById('formsArea').style.display = 'none';
+    // If it's not Minior, use your standard logic
+    if (currentPoke.species.name !== 'minior') {
+        if (varieties.length <= 1) {
+            formsArea.style.display = 'none';
+            return;
+        }
+        formsArea.style.display = 'block';
+        list.innerHTML = varieties.map(v => {
+            const isCurrent = v.pokemon.name === currentPoke.poke.name;
+            const label = v.is_default ? 'BASE' : v.pokemon.name.replace(currentPoke.species.name + '-', '').toUpperCase();
+            return `<button class="form-btn ${isCurrent ? 'active' : ''}" onclick="loadForm('${v.pokemon.name}')">${label}</button>`;
+        }).join('');
         return;
     }
 
-    document.getElementById('formsArea').style.display = 'block';
-    list.innerHTML = varieties.map(v => {
-        // This check determines which button gets the 'active' class
-        const isCurrent = v.pokemon.name === currentPoke.poke.name;
-        const label = v.is_default ? 'BASE' : v.pokemon.name.replace(currentPoke.species.name + '-', '').toUpperCase();
-        
-        // The ${isCurrent ? 'active' : ''} adds the class your CSS uses
-        return `<button class="form-btn ${isCurrent ? 'active' : ''}" onclick="loadForm('${v.pokemon.name}')">${label}</button>`;
+    // --- MINIOR SPECIFIC LOGIC ---
+    formsArea.style.display = 'block';
+    
+    // 1. Find the first Meteor form (usually 'minior-red-meteor' or 'minior-meteor')
+    const meteorForm = varieties.find(v => v.pokemon.name.includes('meteor'));
+    
+    // 2. Find the first Core form (usually the default 'minior-red')
+    const coreForm = varieties.find(v => !v.pokemon.name.includes('meteor'));
+
+    const simplifiedVarieties = [
+        { name: meteorForm.pokemon.name, label: 'METEOR FORM' },
+        { name: coreForm.pokemon.name, label: 'CORE FORM' }
+    ];
+
+    list.innerHTML = simplifiedVarieties.map(v => {
+        const isCurrent = currentPoke.poke.name.includes('meteor') 
+            ? v.label === 'METEOR FORM' 
+            : v.label === 'CORE FORM';
+
+        return `<button class="form-btn ${isCurrent ? 'active' : ''}" onclick="loadForm('${v.name}')">${v.label}</button>`;
     }).join('');
 }
-
     async function loadForm(variantName) {
         const pokeData = await (await fetch(`https://pokeapi.co/api/v2/pokemon/${variantName}`)).json();
         currentPoke.poke = pokeData;
@@ -767,16 +924,11 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
 
     // --- Placeholder for other functions to keep code running ---
     function setGame(g, btn) {
-    // Verifica si el juego tiene movimientos
-    const hasMoves = currentPoke.poke.moves.some(m => 
-        m.version_group_details.some(v => v.version_group.name === (g==='la'?'legends-arceus':'scarlet-violet'))
-    );
-    if (!hasMoves) return; // No hacer nada si no hay movimientos
-
     activeGame = g;
     document.querySelectorAll('.game-btn').forEach(b => {
         b.classList.remove('active');
-        b.style.opacity = (b.id === btn.id) ? '1' : '0.5';
+        if (b.id !== btn.id) b.style.opacity = '0.5'; // grisear el no seleccionado
+        else b.style.opacity = '1';
     });
     btn.classList.add('active');
     renderMoves();
@@ -901,146 +1053,132 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
     async function renderEvoChain(chain) {
     const container = document.getElementById('evoChain');
     container.innerHTML = ""; 
+    // Maintains centering and horizontal scroll if the chain is long (e.g., Eevee)
+    container.style.cssText = `
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        align-items: center;
+        overflow-x: auto;
+        padding: 10px 0;
+        gap: 0;
+        width: 100%;
+    `;
 
-    // Main entry point
     await renderBranch(chain, container);
 
-   async function renderBranch(stage, targetContainer) {
-    const column = document.createElement('div');
-    column.style.cssText = "display: flex; flex-direction: column; align-items: center; gap: 10px;";
-    
-    // 1. Fetch species data for variants
-    const speciesRes = await fetch(stage.species.url);
-    const speciesData = await speciesRes.json();
-    const forms = speciesData.varieties.filter(v => 
-        v.pokemon.name.includes('-alola') || v.pokemon.name.includes('-galar') || 
-        v.pokemon.name.includes('-hisui') || v.pokemon.name.includes('-paldea') || v.is_default
-    );
-
-    const formsBox = document.createElement('div');
-    formsBox.style.cssText = "display: flex; flex-direction: column; gap: 5px; align-items: center; min-width: 80px;";
-    
-    forms.forEach((form, idx) => {
-        if (!form.is_default && idx > 0) {
-            const line = document.createElement('div');
-            line.style.cssText = "width: 30px; height: 1px; background: #e2e8f0; margin: 2px 0;";
-            formsBox.appendChild(line);
-        }
-        const isCurrent = form.pokemon.name === currentPoke.poke.name;
-        const formId = form.pokemon.url.split('/').slice(-2, -1)[0];
-        const name = form.is_default ? stage.species.name : form.pokemon.name.split('-')[1];
+    async function renderBranch(stage, targetContainer) {
+        const column = document.createElement('div');
+        column.style.cssText = "display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0;";
         
-        formsBox.innerHTML += `
-            <div onclick="loadPokemon('${form.pokemon.name}')" style="cursor:pointer; text-align:center; padding:5px; width:100%; ${isCurrent ? 'background:#e2e8f0; border-radius:12px; border:2px solid var(--accent);' : ''}">
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${formId}.png" style="width:50px;">
+        // 1. Fetch species data and filter for regional variants
+        const speciesRes = await fetch(stage.species.url);
+        const speciesData = await speciesRes.json();
+        const forms = speciesData.varieties.filter(v => 
+            v.pokemon.name.includes('-alola') || v.pokemon.name.includes('-galar') || 
+            v.pokemon.name.includes('-hisui') || v.pokemon.name.includes('-paldea') || v.is_default
+        );
+
+        const formsBox = document.createElement('div');
+        formsBox.style.cssText = "display: flex; flex-direction: column; gap: 4px; align-items: center; min-width: 60px;";
+        
+        forms.forEach((form, idx) => {
+            // Visual separator line for regional forms
+            if (!form.is_default && idx > 0) {
+                const line = document.createElement('div');
+                line.style.cssText = "width: 25px; height: 1px; background: #e2e8f0; margin: 2px 0;";
+                formsBox.appendChild(line);
+            }
+
+            const isCurrent = form.pokemon.name === currentPoke.poke.name;
+            const formId = form.pokemon.url.split('/').slice(-2, -1)[0];
+            const name = form.is_default ? stage.species.name : form.pokemon.name.split('-')[1];
+
+            const pokeDiv = document.createElement('div');
+            pokeDiv.style.cssText = `
+                cursor: pointer;
+                text-align: center;
+                padding: 4px;
+                width: 100%;
+                transition: transform 0.2s ease;
+                ${isCurrent ? 'background:#f1f5f9; border-radius:12px; border:2px solid var(--accent);' : ''}
+            `;
+            pokeDiv.innerHTML = `
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${formId}.png" style="width:45px; height:45px; object-fit:contain;">
                 <div style="font-weight:900; font-size:8px;">${name.toUpperCase()}</div>
-            </div>`;
-    });
+            `;
+            pokeDiv.onclick = () => loadPokemon(form.pokemon.name);
+            formsBox.appendChild(pokeDiv);
+        });
 
-    column.appendChild(formsBox);
-    targetContainer.appendChild(column);
+        column.appendChild(formsBox);
+        targetContainer.appendChild(column);
 
-    // 2. Handle Branching: Each path gets its own arrow and label
-    if (stage.evolves_to.length > 0) {
-        const branchWrapper = document.createElement('div');
-        branchWrapper.style.cssText = "display: flex; flex-direction: column; gap: 15px; justify-content: center;";
-        targetContainer.appendChild(branchWrapper);
-        
-        for (const next of stage.evolves_to) {
-            const pathContainer = document.createElement('div');
-            pathContainer.style.cssText = "display: flex; align-items: center;";
-            branchWrapper.appendChild(pathContainer);
-
-            // Create specific connector for THIS branch
-            // Inside your branch loop...
-const details = next.evolution_details[0];
-let methodText = "LEVEL UP"; 
-
-if (details) {
-    const parts = [];
-    
-    // 1. REMAP LOCATIONS TO STONES (Modern standard)
-   if (details.location) {
-    const loc = details.location.name.toLowerCase();
-
-    // 1. LEAF STONE / MOSS ROCK LOCATIONS
-    if (loc.includes('moss') || loc.includes('eterna-forest') || loc.includes('pinwheel-forest') || loc.includes('petalburg-woods')) {
-        parts.push("LEAF STONE");
-    } 
-    // 2. ICE STONE / ICY ROCK LOCATIONS
-    else if (loc.includes('sinnoh') || loc.includes('frost') || loc.includes('lanakila') || loc.includes('twist-mountain')) {
-        parts.push("ICE STONE");
-    } 
-    // 3. THUNDER STONE / MAGNETIC FIELD LOCATIONS
-    else if (loc.includes('magnetic') || loc.includes('coronet') || loc.includes('chargestone') || loc.includes('mauville') || loc.includes('kalos-route-13')) {
-        parts.push("THUNDER STONE");
-    } 
-    // 4. FALLBACK (for any unique locations not covered by stones)
-    else {
-        parts.push(`AT ${details.location.name.replace(/-/g, ' ').toUpperCase()}`);
-    }
-}
-// 1. Fairy-type move check (Sylveon)
-if (details.known_move_type) {
-    const typeName = details.known_move_type.name.toUpperCase();
-    parts.push(`KNOWS ${typeName} MOVE`);
-}
-
-// 2. Friendship/Affection check (Sylveon + others)
-if (details.min_happiness || details.min_affection) {
-    let friendStr = "FRIENDSHIP";
-    
-    // Add time of day if specific (Espeon/Umbreon)
-    if (details.time_of_day) {
-        friendStr += ` (${details.time_of_day.toUpperCase()})`;
-    }
-    
-    parts.push(friendStr);
-}
-    // 2. Standard Stone/Item Trigger
-    if (details.item) {
-        parts.push(details.item.name.replace(/-/g, ' ').toUpperCase());
-    }
-
-    // 3. Friendship & Time
-    if (details.min_happiness) {
-        let friendStr = "FRIENDSHIP";
-        if (details.time_of_day) friendStr += ` (${details.time_of_day.toUpperCase()})`;
-        parts.push(friendStr);
-    }
-
-    // 4. Standard Triggers
-    if (details.min_level) parts.push(`LVL ${details.min_level}`);
-    if (details.trigger.name === 'trade') parts.push("TRADE");
-    if (details.held_item) parts.push(`HOLD ${details.held_item.name.replace(/-/g, ' ').toUpperCase()}`);
-    if (details.known_move) parts.push(`MOVE: ${details.known_move.name.toUpperCase()}`);
-    
-    // 5. Cleanup and deduplicate
-    const uniqueParts = [...new Set(parts)];
-    
-    // Final check: If a location was remapped to a stone that was already there, 
-    // Set() ensures it only shows once.
-    methodText = uniqueParts.length > 0 ? uniqueParts.join(' + ') : details.trigger.name.replace(/-/g, ' ').toUpperCase();
-}
-
-// UI Connector
-const connector = document.createElement('div');
-connector.style.cssText = "display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 85px; padding: 0 5px;";
-connector.innerHTML = `
-    <span style="font-size: 7px; font-weight: 900; color: var(--silver-dark); margin-bottom: -4px; text-align: center; line-height: 1.1;">
-        ${methodText}
-    </span>
-    <span style="color: #cbd5e1; font-size: 20px;">→</span>
-`;
+        // 2. Handle branching evolutions
+        if (stage.evolves_to.length > 0) {
+            const branchWrapper = document.createElement('div');
+            // This wrapper ensures multiple evolutions (Eevee) stack vertically while staying centered
+            branchWrapper.style.cssText = "display: flex; flex-direction: column; gap: 12px; justify-content: center;";
+            targetContainer.appendChild(branchWrapper);
             
-            pathContainer.appendChild(connector);
-            await renderBranch(next, pathContainer);
+            for (const next of stage.evolves_to) {
+                const pathContainer = document.createElement('div');
+                pathContainer.style.cssText = "display: flex; align-items: center;";
+                branchWrapper.appendChild(pathContainer);
+
+                // Evolution Detail Logic
+                const details = next.evolution_details[0];
+                let methodText = "LEVEL UP"; 
+
+                if (details) {
+                    const parts = [];
+                    
+                    // Remap Locations to Stones
+                    if (details.location) {
+                        const loc = details.location.name.toLowerCase();
+                        if (loc.includes('moss') || loc.includes('eterna-forest') || loc.includes('pinwheel-forest') || loc.includes('petalburg-woods')) parts.push("LEAF STONE");
+                        else if (loc.includes('sinnoh') || loc.includes('frost') || loc.includes('lanakila') || loc.includes('twist-mountain')) parts.push("ICE STONE");
+                        else if (loc.includes('magnetic') || loc.includes('coronet') || loc.includes('chargestone') || loc.includes('mauville') || loc.includes('kalos-route-13')) parts.push("THUNDER STONE");
+                        else parts.push(`AT ${details.location.name.replace(/-/g, ' ').toUpperCase()}`);
+                    }
+
+                    if (details.known_move_type) parts.push(`KNOWS ${details.known_move_type.name.toUpperCase()} MOVE`);
+                    if (details.min_happiness || details.min_affection) parts.push(`FRIENDSHIP${details.time_of_day ? ' (' + details.time_of_day.toUpperCase() + ')' : ''}`);
+                    if (details.item) parts.push(details.item.name.replace(/-/g, ' ').toUpperCase());
+                    if (details.min_level) parts.push(`LVL ${details.min_level}`);
+                    if (details.trigger.name === 'trade') parts.push("TRADE");
+                    if (details.held_item) parts.push(`HOLD ${details.held_item.name.replace(/-/g, ' ').toUpperCase()}`);
+                    if (details.known_move) parts.push(`MOVE: ${details.known_move.name.toUpperCase()}`);
+                    
+                    methodText = [...new Set(parts)].join(' + ') || details.trigger.name.replace(/-/g, ' ').toUpperCase();
+                }
+
+                const connector = document.createElement('div');
+                connector.style.cssText = "display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 60px; padding: 0 4px;";
+                connector.innerHTML = `
+                    <span style="font-size: 6px; font-weight: 900; color: #94a3b8; margin-bottom: -3px; text-align: center; line-height: 1;">
+                        ${methodText}
+                    </span>
+                    <span style="color: #cbd5e1; font-size: 18px;">→</span>
+                `;
+                
+                pathContainer.appendChild(connector);
+                await renderBranch(next, pathContainer);
+            }
         }
     }
 }
+
+function loadRandomPokemon() {
+    // Suponiendo que tu Pokédex va del 1 al 1010 (ajusta según tu dataset)
+    const maxPokedex = 1025;
+    const randomId = Math.floor(Math.random() * maxPokedex) + 1;
+    
+    // Cargar el Pokémon por nombre o id
+    loadPokemon(randomId.toString());
 }
 
 </script>
 </body>
 </html>
-
