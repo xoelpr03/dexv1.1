@@ -248,6 +248,70 @@
     width: 200px;
     margin-left: auto;
     margin-right: auto;
+
+    /* Mobile Optimization - Vertical Phones */
+@media (max-width: 600px) {
+    /* 1. Reset Container Spacing */
+    .container {
+        padding: 5px;
+    }
+
+    /* 2. Force Search Menu to stay center but responsive */
+    #search-section {
+        height: 100vh; /* Keeps it centered vertically */
+    }
+
+    .search-box-container {
+        width: 95%;
+        padding: 20px 15px;
+    }
+
+    /* 3. Stack the Grid for Info Card */
+    .layout-grid {
+        grid-template-columns: 1fr; /* One column only */
+        gap: 10px;
+    }
+
+    /* 4. Shrink Large Text */
+    #pokeName {
+        font-size: 26px !important;
+        text-align: center;
+    }
+
+    .dex-title {
+        font-size: 28px !important;
+    }
+
+    /* 5. Optimize Images and Icons */
+    #pokeImg {
+        width: 200px !important;
+        margin: 0 auto;
+    }
+
+    .evo-img {
+        width: 60px;
+        height: 60px;
+    }
+
+    /* 6. Make Table Scrollable horizontally so it doesn't break the page */
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -10px; /* Bleeds out slightly for better look */
+        padding: 0 10px;
+    }
+
+    table {
+        min-width: 350px; /* Ensures table doesn't squish too much */
+    }
+
+    /* 7. Adjust Header Sticky Bar */
+    .header-flex {
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 0 0 15px 15px;
+    }
+    }
 }
     </style>
 </head>
@@ -765,4 +829,5 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
