@@ -540,20 +540,25 @@
     const cap = s => s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
     
 function applyDynamicTheme(types) {
-    let bg = "#f8fafc"; // Soft default gray
+    let primaryColor = "#3b82f6"; // Default blue
+    let bg = "#ffffff";
 
     if (types.length === 1) {
-        const color = typeColors[types[0].type.name] || "#ffffff";
-        bg = color;
+        primaryColor = typeColors[types[0].type.name] || "#3b82f6";
+        bg = primaryColor;
     } else if (types.length >= 2) {
-        const color1 = typeColors[types[0].type.name] || "#ffffff";
+        primaryColor = typeColors[types[0].type.name] || "#3b82f6";
         const color2 = typeColors[types[1].type.name] || "#ffffff";
-        bg = `linear-gradient(135deg, ${color1}, ${color2})`;
+        bg = `linear-gradient(135deg, ${primaryColor}, ${color2})`;
     }
 
-    // Apply to the body background
+    // THIS IS THE KEY FOR YOUR BUTTONS:
+    // It tells the CSS what "var(--accent)" should be
+    document.documentElement.style.setProperty('--accent', primaryColor);
+    
+    // Apply the background to the body
     document.body.style.background = bg;
-    document.body.style.backgroundAttachment = "fixed"; // Keeps gradient smooth while scrolling
+    document.body.style.backgroundAttachment = "fixed";
 }
 
 function getStatColor(v) {
@@ -697,22 +702,24 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
     }
 
     function renderFormsList() {
-        const varieties = currentPoke.species.varieties;
-        const area = document.getElementById('formsArea');
-        const list = document.getElementById('formsList');
+    const varieties = currentPoke.species.varieties;
+    const list = document.getElementById('formsList');
 
-        if (varieties.length <= 1) {
-            area.style.display = 'none';
-            return;
-        }
-
-        area.style.display = 'block';
-        list.innerHTML = varieties.map(v => {
-            const isCurrent = v.pokemon.name === currentPoke.poke.name;
-            const label = v.is_default ? 'BASE' : v.pokemon.name.replace(currentPoke.species.name + '-', '').toUpperCase();
-            return `<button class="form-btn ${isCurrent ? 'active' : ''}" onclick="loadForm('${v.pokemon.name}')">${label}</button>`;
-        }).join('');
+    if (varieties.length <= 1) {
+        document.getElementById('formsArea').style.display = 'none';
+        return;
     }
+
+    document.getElementById('formsArea').style.display = 'block';
+    list.innerHTML = varieties.map(v => {
+        // This check determines which button gets the 'active' class
+        const isCurrent = v.pokemon.name === currentPoke.poke.name;
+        const label = v.is_default ? 'BASE' : v.pokemon.name.replace(currentPoke.species.name + '-', '').toUpperCase();
+        
+        // The ${isCurrent ? 'active' : ''} adds the class your CSS uses
+        return `<button class="form-btn ${isCurrent ? 'active' : ''}" onclick="loadForm('${v.pokemon.name}')">${label}</button>`;
+    }).join('');
+}
 
     async function loadForm(variantName) {
         const pokeData = await (await fetch(`https://pokeapi.co/api/v2/pokemon/${variantName}`)).json();
@@ -1011,3 +1018,4 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
