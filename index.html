@@ -9,29 +9,38 @@
     --scarlet: #ff2424; 
     --violet: #8c47ff; 
     --accent: #3c5aa6;
-    /* Minimalist Silver Theme */
     --silver-light: #f8fafc;
     --silver-mid: #e2e8f0;
     --silver-dark: #94a3b8;
-        }
+}
 
-        body { 
+body { 
     font-family: 'Inter', sans-serif; 
     margin: 0; padding: 0; 
     color: #1e293b; 
     min-height: 100vh; 
-    /* Soft white/silver gradient */
     background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%); 
     background-attachment: fixed;
-        }
-        body.theme-sv { background: linear-gradient(135deg, var(--scarlet) 0%, var(--violet) 100%); }
+}
 
-        .container { max-width: 1100px; margin: auto; padding: 10px; box-sizing: border-box; }
+body.theme-sv { background: linear-gradient(135deg, var(--scarlet) 0%, var(--violet) 100%); }
 
-        #search-section { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-       .search-box-container { 
+.container { max-width: 1100px; margin: auto; padding: 10px; box-sizing: border-box; }
+
+/* --- SEARCH SECTION --- */
+#search-section { 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.search-box-container { 
     background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px); /* Glassmorphism effect */
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.5);
     padding: 30px 20px; 
     border-radius: 30px; 
@@ -40,20 +49,21 @@
     width: 90%; 
     max-width: 600px; 
 }
-        .dex-title { margin:0 0 20px 0; background: linear-gradient(90deg, #3c5aa6, #ffcb05); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: clamp(24px, 8vw, 38px); font-weight: 900; cursor: pointer; }
 
-        .main-nav { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-        .search-wrapper { position: relative; width: 100%; display: flex; gap: 8px; }
-        .nav-input { flex-grow: 1; padding: 15px; border: 3px solid #e2e8f0; border-radius: 15px; outline: none; font-size: 16px; box-sizing: border-box; }
-        .search-btn { background: var(--accent); color: white; border: none; border-radius: 15px; padding: 0 20px; font-weight: 800; cursor: pointer; }
+.dex-title { 
+    margin:0 0 20px 0; 
+    background: linear-gradient(90deg, #3c5aa6, #ffcb05); 
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+    font-size: clamp(24px, 8vw, 38px); 
+    font-weight: 900; 
+    cursor: pointer; 
+}
 
-        .suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: none; overflow-y: auto; max-height: 250px; font-size: 16px; width: 100%; }
-        .list-item { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+.nav-input { flex-grow: 1; padding: 15px; border: 3px solid #e2e8f0; border-radius: 15px; outline: none; font-size: 16px; }
+.search-btn { background: var(--accent); color: white; border: none; border-radius: 15px; padding: 0 20px; font-weight: 800; cursor: pointer; }
 
-        .list-item:hover {
-            background-color: #e2e8f0;
-        }
-
+/* --- DISPLAY CARD --- */
 #display-card { 
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
@@ -62,118 +72,27 @@
     box-shadow: 0 20px 40px rgba(0,0,0,0.08); 
     border: 1px solid white;
     margin-top: 10px; 
-    margin-bottom: 20px;
     display: none;
 }
-        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; position: sticky; top: 0; background: rgba(255,255,255,0.9); padding: 10px 0; z-index: 10; }
 
-        .layout-grid { display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
+.layout-grid { display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
 
-        @media (max-width: 850px) {
-            .layout-grid { grid-template-columns: 1fr; }
-            .header-flex { flex-wrap: wrap; justify-content: center; }
-            .back-btn { order: 1; }
-            .shiny-btn { order: 2; }
-            #pokeImg { width: 220px !important; }
-        }
-
-        .back-btn { background: #f1f5f9; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 800; color: #64748b; }
-        .v-toggle { font-size: 12px; padding: 10px 15px; border-radius: 20px; border: 2px solid #e2e8f0; background: white; font-weight: 900; white-space: nowrap; }
-        .v-toggle.active { background: var(--accent); color: white; border-color: var(--accent); }
-
-        .stat-row { display: flex; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: 900; }
-        .stat-bar-bg { flex-grow: 1; background: #e2e8f0; height: 12px; border-radius: 6px; margin: 0 10px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; }
-
-        .type-badge { padding: 6px 12px; border-radius: 8px; color: white; font-size: 11px; font-weight: 800; text-transform: uppercase; margin: 4px; display: inline-block; }
-        .shiny-btn { font-size: 28px; background: none; border: none; filter: grayscale(1); padding: 5px; }
-        .shiny-btn.active { filter: grayscale(0) drop-shadow(0 0 10px #ffcb05); }
-
-        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 15px; }
-       th { 
-    background: transparent;
-    color: var(--silver-dark);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 10px;
-}
-        td { padding: 12px 8px; border-bottom: 1px solid #f1f5f9; text-transform: capitalize; }
-
-        .cat-icon { width: 12px; height: 12px; display: inline-block; vertical-align: middle; margin-right: 8px; }
-.cat-physical { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 11px solid #ef4444; }
-.cat-special { background-color: #3b82f6; border-radius: 50%; width: 11px; height: 11px; }
-.cat-status { border: 2px solid #94a3b8; border-radius: 50%; width: 10px; height: 10px; box-sizing: border-box; }
-
-        .evo-item { 
-            text-align: center; 
-            text-transform: small-caps; 
-            cursor: pointer; 
-            padding: 5px; 
-            border-radius: 10px; 
-        }
-        .evo-img { width: 70px; height: 70px; }
-        #evoChain {
-    display: flex;
-    flex-direction: row;      /* Keep it horizontal */
-    justify-content: center;   /* THIS centers the boxes horizontally */
-    align-items: center;       /* Centers them vertically relative to each other */
-    gap: 0;                    /* We'll handle spacing in JS */
-    width: 100%;
-    margin: 0 auto;
-    overflow-x: auto;          /* Scrollable if too wide */
-    padding: 10px 0;
-}
-        #search-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh; /* Takes up the full height of the screen */
-    width: 100%;
-    transition: all 0.3s ease; /* Makes the transition smooth */
-}
-
-.search-box-container {
-    text-align: center;
-    width: 100%;
-    max-width: 600px; /* Keeps the search bar from getting too wide */
-    padding: 20px;
-
-
-/* Ensure the columns inside also center their content */
-.evo-stage-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-        .list-item.active {
-            display: block !important;
-            width: 100% !important;
-            background-color: #64748b !important;
-            color: white !important;
-            padding: 15px 20px !important;
-            box-sizing: border-box !important;
-            border-radius: 8px !important;
-        }
-        #movesBody td {
-    font-variant: small-caps;
-    font-size: 14px; /* Optional: slightly larger font looks better with small-caps */
-    letter-spacing: 0.5px;
-}
-/* Styling for the Variants Container */
+/* --- VARIANTS SECTION --- */
 #formsArea {
-    background: rgba(255, 255, 255, 0.6) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.5) !important;
-    padding: 20px !important;
-    border-radius: 20px !important;
-    margin-bottom: 25px !important;
+    border: 1px solid rgba(226, 232, 240, 0.6) !important;
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 25px;
 }
 
-/* Individual Variant Button Styling */
+#formsList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
 .variant-btn {
     background: white;
     border: 2px solid #f1f5f9;
@@ -186,145 +105,43 @@
     letter-spacing: 1px;
     cursor: pointer;
     transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.variant-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .variant-btn.active {
     background: var(--accent);
     color: white;
     border-color: var(--accent);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-/* Container styling for the variants section */
-#formsArea {
-    background: rgba(255, 255, 255, 0.5) !important;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(226, 232, 240, 0.6) !important;
-}
-
-.version-toggle {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.ver-btn {
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 10px;
-    font-weight: 800;
-    cursor: pointer;
-    border: 1px solid var(--silver-mid);
-    background: white;
-    color: var(--silver-dark);
-    transition: all 0.2s;
-}
-
-.ver-btn.scarlet { border-color: #ff2424; color: #ff2424; }
-.ver-btn.scarlet.active { background: #ff2424; color: white; }
-
-.ver-btn.violet { border-color: #8c47ff; color: #8c47ff; }
-.ver-btn.violet.active { background: #8c47ff; color: white; }
-
-#dex-entry-text {
-    font-size: 13px;
-    line-height: 1.6;
-    color: #475569;
-    font-style: italic;
-    text-align: center;
-    padding: 0 20px;
-    min-height: 60px;
-}
-
+/* --- CREATOR CREDIT --- */
 .creator-credit {
     margin-top: 30px;
     font-size: 10px;
     font-weight: 800;
     text-transform: lowercase;
     letter-spacing: 2px;
-    color: var(--silver-dark); /* Using your silver variable */
+    color: var(--silver-dark);
     opacity: 0.6;
     text-align: center;
     border-top: 1px solid var(--silver-light);
     padding-top: 15px;
     width: 200px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 30px auto 0;
+}
 
-    /* Mobile Optimization - Vertical Phones */
+/* --- MOBILE OPTIMIZATION --- */
+@media (max-width: 850px) {
+    .layout-grid { grid-template-columns: 1fr; }
+    #pokeImg { width: 220px !important; margin: auto; }
+}
+
 @media (max-width: 600px) {
-    /* 1. Reset Container Spacing */
-    .container {
-        padding: 5px;
-    }
-
-    /* 2. Force Search Menu to stay center but responsive */
-    #search-section {
-        height: 100vh; /* Keeps it centered vertically */
-    }
-
-    .search-box-container {
-        width: 95%;
-        padding: 20px 15px;
-    }
-
-    /* 3. Stack the Grid for Info Card */
-    .layout-grid {
-        grid-template-columns: 1fr; /* One column only */
-        gap: 10px;
-    }
-
-    /* 4. Shrink Large Text */
-    #pokeName {
-        font-size: 26px !important;
-        text-align: center;
-    }
-
-    .dex-title {
-        font-size: 28px !important;
-    }
-
-    /* 5. Optimize Images and Icons */
-    #pokeImg {
-        width: 200px !important;
-        margin: 0 auto;
-    }
-
-    .evo-img {
-        width: 60px;
-        height: 60px;
-    }
-
-    /* 6. Make Table Scrollable horizontally so it doesn't break the page */
-    .table-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        margin: 0 -10px; /* Bleeds out slightly for better look */
-        padding: 0 10px;
-    }
-
-    table {
-        min-width: 350px; /* Ensures table doesn't squish too much */
-    }
-
-    /* 7. Adjust Header Sticky Bar */
-    .header-flex {
-        padding: 10px;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 0 0 15px 15px;
-    }
-    }
+    #search-section { height: 100vh; }
+    .search-box-container { width: 95%; padding: 20px 15px; }
+    #pokeName { font-size: 26px !important; text-align: center; }
+    .dex-title { font-size: 28px !important; }
+    #formsList { display: grid; grid-template-columns: 1fr 1fr; }
+    .variant-btn { text-align: center; padding: 12px 5px; }
 }
     </style>
 </head>
@@ -842,6 +659,7 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
 
