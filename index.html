@@ -505,24 +505,20 @@
     const cap = s => s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
     
 function applyDynamicTheme(types) {
-    const bgEl = document.body;
+    let bg = "#ffffff"; // default
 
-    body.className = '';
-
-    if (!types || types.length === 0) {
-        bgEl.style.background = '#ffffff';
-        return;
+    if (types.length === 1) {
+        const color = typeColors[types[0].type.name] || "#ffffff";
+        bg = color;
+    } else if (types.length >= 2) {
+        const color1 = typeColors[types[0].type.name] || "#ffffff";
+        const color2 = typeColors[types[1].type.name] || "#ffffff";
+        bg = `linear-gradient(135deg, ${color1}, ${color2})`;
     }
 
-    if (types.length === 2) {
-        const color1 = typeColors[types[0].type.name] || '#ffffff';
-        const color2 = typeColors[types[1].type.name] || '#ffffff';
-        bgEl.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
-    } else {
-        const color = typeColors[types[0].type.name] || '#ffffff';
-        bgEl.style.background = `linear-gradient(135deg, ${color}, #ffffff)`;
-    }
+    document.body.style.background = bg;
 }
+
 
 function getStatColor(v) {
     if(v < 50) return '#ff4d4d';
@@ -977,6 +973,7 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
 
