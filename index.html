@@ -507,18 +507,20 @@
     const cap = s => s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
     
 function applyDynamicTheme(types) {
-    const bgEl = document.body; // cambiamos el fondo del body
+    const bgEl = document.body;
+
+    if (!types || types.length === 0) {
+        bgEl.style.background = '#ffffff';
+        return;
+    }
 
     if (types.length === 2) {
         const color1 = typeColors[types[0].type.name] || '#ffffff';
         const color2 = typeColors[types[1].type.name] || '#ffffff';
-        // gradiente diagonal de ambos colores
         bgEl.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
-    } else if (types.length === 1) {
-        const color = typeColors[types[0].type.name] || '#ffffff';
-        bgEl.style.background = `linear-gradient(135deg, ${color}, #ffffff)`; // color + blanco
     } else {
-        bgEl.style.background = '#ffffff'; // si no hay tipos, blanco liso
+        const color = typeColors[types[0].type.name] || '#ffffff';
+        bgEl.style.background = `linear-gradient(135deg, ${color}, #ffffff)`;
     }
 }
 
@@ -975,3 +977,4 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
