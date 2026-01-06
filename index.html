@@ -262,6 +262,127 @@
         .search-wrapper { gap: 5px; }
         .search-btn { padding: 0 15px; }
     }
+        /* --- MOVE CATEGORY ICONS RESTORED --- */
+.cat-icon { 
+    width: 12px; 
+    height: 12px; 
+    display: inline-block; 
+    vertical-align: middle; 
+    margin-right: 8px; 
+}
+
+/* Red Triangle for Physical Moves */
+.cat-physical { 
+    width: 0; 
+    height: 0; 
+    border-left: 6px solid transparent; 
+    border-right: 6px solid transparent; 
+    border-bottom: 11px solid #ef4444; 
+}
+
+/* Blue Circle for Special Moves */
+.cat-special { 
+    background-color: #3b82f6; 
+    border-radius: 50%; 
+    width: 11px; 
+    height: 11px; 
+}
+
+/* Silver Ring for Status Moves */
+.cat-status { 
+    border: 2px solid #94a3b8; 
+    border-radius: 50%; 
+    width: 10px; 
+    height: 10px; 
+    box-sizing: border-box; 
+                   }
+        /* --- GLOBAL MOBILE OPTIMIZATION --- */
+@media (max-width: 600px) {
+    /* 1. Prevent Horizontal Overflow & Improve Scrolling */
+    html, body {
+        overflow-x: hidden; 
+        position: relative;
+        width: 100%;
+    }
+
+    .container {
+        padding: 8px; /* Slimmer gutters for more content space */
+    }
+
+    /* 2. Search Section: Mobile Centering */
+    #search-section {
+        height: 80vh; /* Shorter height so keyboard doesn't hide everything */
+    }
+
+    .search-box-container {
+        width: 92%;
+        padding: 25px 15px;
+        border-radius: 20px; /* Slightly tighter corners for small screens */
+    }
+
+    /* 3. Layout Grid: Single Column */
+    .layout-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* 4. Images & Identity */
+    #pokeImg {
+        width: 220px !important;
+        height: auto;
+        margin: 10px auto;
+    }
+
+    #pokeName {
+        font-size: 28px !important;
+        text-align: center;
+    }
+
+    /* 5. Touch-Friendly Targets */
+    .variant-btn, .v-toggle, .back-btn {
+        min-height: 44px; /* Apple/Android recommended tap size */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* 6. Evolution Chain: Horizontal Swipe */
+    #evoChain {
+        justify-content: flex-start; /* Start from left for swiping */
+        gap: 20px;
+        padding-bottom: 15px;
+        -webkit-overflow-scrolling: touch; /* Smooth swipe on iPhone */
+    }
+
+    /* 7. Move Table Optimization */
+    .table-wrapper {
+        margin: 0 -8px; /* Bleed to edges so it looks native */
+        width: calc(100% + 16px);
+        overflow-x: auto;
+    }
+
+    table {
+        font-size: 13px; /* Slightly larger for legibility */
+    }
+
+    td, th {
+        padding: 12px 8px; /* More vertical space for thumbs */
+    }
+
+    /* 8. Sticky Header Fix */
+    .header-flex {
+        position: sticky;
+        top: 0;
+        background: rgba(255, 255, 255, 0.98);
+        padding: 10px;
+        margin: -20px -20px 20px -20px; /* Pin to top of display card */
+        border-radius: 24px 24px 0 0;
+        border-bottom: 1px solid var(--silver-mid);
+    }
+}
+        
+        
     </style>
 </head>
 <body>
@@ -778,6 +899,7 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
 
