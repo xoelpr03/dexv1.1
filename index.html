@@ -495,8 +495,12 @@
     const cap = s => s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
 
     function getStatColor(v) {
-        if(v < 50) return '#ff4d4d'; if(v < 80) return '#ff944d'; if(v < 100) return '#ffdb4d';
-        if(v < 120) return '#52be80'; if(v < 150) return '#5dade2'; return '#af7ac5';
+        if(v < 50) return '#ff4d4d';
+        if(v < 70) return '#ff944d';
+        if(v < 90) return '#ffdb4d';
+        if(v < 130) return '#52be80';
+        if(v < 150) return '#5dade2';
+        return '#af7ac5';
     }
 
     window.onload = async () => {
@@ -919,22 +923,3 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
