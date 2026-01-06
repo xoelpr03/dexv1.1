@@ -163,33 +163,46 @@
     font-size: 14px; /* Optional: slightly larger font looks better with small-caps */
     letter-spacing: 0.5px;
 }
-.form-btn {
+/* Styling for the Variants Container */
+#formsArea {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    padding: 20px !important;
+    border-radius: 20px !important;
+    margin-bottom: 25px !important;
+}
+
+/* Individual Variant Button Styling */
+.variant-btn {
     background: white;
-    color: #64748b;
-    border: 1px solid #e2e8f0;
-    padding: 8px 16px;
-    border-radius: 50px; /* Pill shape */
+    border: 2px solid #f1f5f9;
+    border-radius: 12px;
+    padding: 8px 14px;
     font-size: 11px;
     font-weight: 800;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    color: #64748b;
     text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.form-btn:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+.variant-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-.form-btn.active {
-    background: #1e293b; /* Dark silver/slate for contrast */
+.variant-btn.active {
+    background: var(--accent);
     color: white;
-    border-color: #1e293b;
-    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+    border-color: var(--accent);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 /* Container styling for the variants section */
@@ -829,5 +842,6 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
