@@ -12,6 +12,8 @@
         --silver-light: #f8fafc;
         --silver-mid: #e2e8f0;
         --silver-dark: #94a3b8;
+        --accent: #3b82f6; 
+        --accent-glow: rgba(59, 130, 246, 0.5);
     }
 
     body { 
@@ -59,6 +61,16 @@
         font-weight: 900; 
         cursor: pointer; 
     }
+
+    #goBtn {
+    background-color: var(--accent) !important;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.stat-bar-fill {
+    /* background removed to allow dynamic coloring */
+    box-shadow: 0 0 12px var(--accent-glow);
+    transition: width 0.5s ease;
+}
 
     .main-nav { display: flex; flex-direction: column; gap: 10px; width: 100%; }
 
@@ -493,15 +505,31 @@
     let allPokes = [], currentPoke = null, isShiny = false, activeVer = 'scarlet', activeGame = 'sv', moveMode = 'all';
     const typeColors = { grass: '#7AC74C', fire: '#EE8130', water: '#6390F0', bug: '#A6B91A', normal: '#A8A77A', poison: '#A33EA1', electric: '#F7D02C', ground: '#E2BF65', fairy: '#D685AD', fighting: '#C22E28', psychic: '#F95587', rock: '#B6A136', ghost: '#735797', ice: '#96D9D6', dragon: '#6F35FC', dark: '#705746', steel: '#B7B7CE', flying: '#A98FF3' };
     const cap = s => s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
+    
+function applyDynamicTheme(types) {
+    const bgEl = document.body; // cambiamos el fondo del body
 
-    function getStatColor(v) {
-        if(v < 50) return '#ff4d4d';
-        if(v < 70) return '#ff944d';
-        if(v < 90) return '#ffdb4d';
-        if(v < 130) return '#52be80';
-        if(v < 150) return '#5dade2';
-        return '#af7ac5';
+    if (types.length === 2) {
+        const color1 = typeColors[types[0].type.name] || '#ffffff';
+        const color2 = typeColors[types[1].type.name] || '#ffffff';
+        // gradiente diagonal de ambos colores
+        bgEl.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+    } else if (types.length === 1) {
+        const color = typeColors[types[0].type.name] || '#ffffff';
+        bgEl.style.background = `linear-gradient(135deg, ${color}, #ffffff)`; // color + blanco
+    } else {
+        bgEl.style.background = '#ffffff'; // si no hay tipos, blanco liso
     }
+}
+
+function getStatColor(v) {
+    if(v < 50) return '#ff4d4d';
+    if(v < 70) return '#ff944d';
+    if(v < 90) return '#ffdb4d';
+    if(v < 130) return '#52be80';
+    if(v < 150) return '#5dade2';
+    return '#af7ac5';
+}
 
     window.onload = async () => {
         const data = await (await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=1025')).json();
@@ -516,14 +544,18 @@
         window.scrollTo(0,0);
     }
 
+    // --- REPAIRED LOAD FUNCTION ---
     async function loadPokemon(name) {
         try {
+            // First try to get basic data to find the species
             let pokeData, speciesData;
             
             try {
+                // Try fetching as a specific variety/form first
                 pokeData = await (await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`)).json();
                 speciesData = await (await fetch(pokeData.species.url)).json();
             } catch (e) {
+                // If that fails, try fetching as a species (default form)
                 speciesData = await (await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name.toLowerCase()}`)).json();
                 const defaultUrl = speciesData.varieties.find(v => v.is_default).pokemon.url;
                 pokeData = await (await fetch(defaultUrl)).json();
@@ -545,59 +577,53 @@
     }
 
     async function render() {
-        const { species, poke, evo } = currentPoke;
-        document.getElementById('pokeName').innerText = cap(poke.name);
-        document.getElementById('dexNumber').innerText = `#${species.id.toString().padStart(4, '0')}`;
-        
-        // Handle Shiny Toggle
-        document.getElementById('pokeImg').src = isShiny ? 
-            (poke.sprites.other.home.front_shiny || poke.sprites.front_shiny) : 
-            (poke.sprites.other.home.front_default || poke.sprites.front_default);
+    if (!currentPoke) return;
+    const { species, poke, evo } = currentPoke;
 
-        document.getElementById('pokeTypes').innerHTML = poke.types.map(t => `<span class="type-badge" style="background:${typeColors[t.type.name]}">${t.type.name}</span>`).join('');
-        document.getElementById('pCat').innerText = species.genera.find(g => g.language.name==='en')?.genus || "";
-        
-        // Render Stats (The fix for dynamic stats is here)
-       let statsHtml = "";
-let baseStatTotal = 0;
+    // A. Apply the theme colors first
+    applyDynamicTheme(poke.types);
 
-poke.stats.forEach(s => {
-    baseStatTotal += s.base_stat;
+    // B. Basic Info
+    document.getElementById('pokeName').innerText = cap(poke.name);
+    document.getElementById('dexNumber').innerText = `#${species.id.toString().padStart(4, '0')}`;
+    document.getElementById('pCat').innerText = species.genera.find(g => g.language.name === 'en')?.genus || "";
 
-    const shortName = s.stat.name
-        .replace('special-', 'S')
-        .substring(0,3)
-        .toUpperCase();
+    // C. Image Logic
+    const imgUrl = isShiny ? 
+        (poke.sprites.other.home.front_shiny || poke.sprites.front_shiny) : 
+        (poke.sprites.other.home.front_default || poke.sprites.front_default);
+    document.getElementById('pokeImg').src = imgUrl;
 
+    // D. Types
+    document.getElementById('pokeTypes').innerHTML = poke.types.map(t => 
+        `<span class="type-badge" style="background:${typeColors[t.type.name]}">${t.type.name}</span>`
+    ).join('');
+
+    // E. Stats & BST (The part that was likely broken)
+    let statsHtml = "";
+    let baseStatTotal = 0;
+
+    poke.stats.forEach(s => {
+        baseStatTotal += s.base_stat;
+        const shortName = s.stat.name.replace('special-', 'S').substring(0,3).toUpperCase();
+
+        statsHtml += `
+    <div class="stat-row">
+        <div style="width:35px; font-size:11px; font-weight:bold;">${shortName}</div>
+        <div style="width:35px; text-align:right; font-weight:bold;">${s.base_stat}</div>
+        <div class="stat-bar-bg">
+<div class="stat-bar-fill" style="width:${(s.base_stat/255)*100}%; background:${getStatColor(s.base_stat)}"></div>        </div>
+    </div>`;
+    });
+
+    // Add the Total line
     statsHtml += `
+        <div style="margin-top:10px; padding-top:8px; border-top:1px solid #ddd; display:flex; justify-content:space-between; font-weight:900;">
+            <span>BST</span>
+            <span>${baseStatTotal}</span>
+        </div>`;
     
-        <div class="stat-row">
-            <div style="width:35px">${shortName}</div>
-            <div style="width:35px; text-align:right">${s.base_stat}</div>
-            <div class="stat-bar-bg">
-                <div class="stat-bar-fill"
-                     style="width:${(s.base_stat/255)*100}%;
-                            background:${getStatColor(s.base_stat)}">
-                </div>
-            </div>
-        </div>
-    `;
-});
-statsHtml += `
-    <div style="
-        margin-top:12px;
-        padding-top:10px;
-        border-top:1px solid #e2e8f0;
-        font-weight:900;
-        font-size:13px;
-        display:flex;
-        justify-content:space-between;
-    ">
-        <span>BST</span>
-        <span>${baseStatTotal}</span>
-    </div>
-`;
-        document.getElementById('stats-area').innerHTML = statsHtml;
+    document.getElementById('stats-area').innerHTML = statsHtml;
 
        // Render Abilities
 let absHtml = "";
@@ -660,78 +686,23 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
 
     // --- SEARCH LOGIC ---
     function setupSearch(id, sugId, list, cb) {
-    const inp = document.getElementById(id),
-          sug = document.getElementById(sugId),
-          goBtn = document.getElementById('goBtn');
-
-    let selectedIndex = -1; // para controlar qué item está seleccionado
-
-    inp.oninput = () => {
-        const val = inp.value.toLowerCase();
-        sug.innerHTML = "";
-        selectedIndex = -1;
-
-        if(!val) { 
-            sug.style.display = "none"; 
-            return; 
-        }
-
-        const matches = list.filter(p => p.name.includes(val) || p.id.toString() === val).slice(0, 10);
-        sug.style.display = matches.length ? "block" : "none";
-
-        matches.forEach((m, i) => {
-            const d = document.createElement('div');
-            d.className = "list-item";
-            d.innerHTML = `<span style="color:#94a3b8; font-weight:bold; margin-right:10px;">#${m.id}</span>${cap(m.name)}`;
-            d.onclick = () => { 
-                cb(m.name); 
-                sug.style.display="none"; 
-                inp.value=""; 
-            };
-            sug.appendChild(d);
-        });
-    };
-
-    // click normal en el botón
-    goBtn.onclick = () => { if(inp.value) cb(inp.value); };
-
-    // control con teclado
-    inp.onkeydown = (e) => {
-        const items = sug.querySelectorAll('.list-item');
-        if (!items.length) return;
-
-        if(e.key === 'ArrowDown') {
-            e.preventDefault();
-            selectedIndex = (selectedIndex + 1) % items.length;
-            updateSelection();
-        } else if(e.key === 'ArrowUp') {
-            e.preventDefault();
-            selectedIndex = (selectedIndex - 1 + items.length) % items.length;
-            updateSelection();
-        } else if(e.key === 'Enter') {
-            e.preventDefault();
-            if(selectedIndex >= 0) {
-                items[selectedIndex].click();
-                selectedIndex = -1;
-            } else if(inp.value) {
-                cb(inp.value);
-            }
-        }
-    };
-
-    function updateSelection() {
-        const items = sug.querySelectorAll('.list-item');
-        items.forEach((it, idx) => {
-            if(idx === selectedIndex) {
-                it.classList.add('selected');
-                it.scrollIntoView({ block: 'nearest' });
-            } else {
-                it.classList.remove('selected');
-            }
-        });
+        const inp = document.getElementById(id), sug = document.getElementById(sugId), goBtn = document.getElementById('goBtn');
+        inp.oninput = () => {
+            const val = inp.value.toLowerCase();
+            sug.innerHTML = "";
+            if(!val) { sug.style.display = "none"; return; }
+            const matches = list.filter(p => p.name.includes(val) || p.id.toString() === val).slice(0, 10);
+            sug.style.display = matches.length ? "block" : "none";
+            matches.forEach(m => {
+                const d = document.createElement('div');
+                d.className = "list-item";
+                d.innerHTML = `<span style="color:#94a3b8; font-weight:bold; margin-right:10px;">#${m.id}</span>${cap(m.name)}`;
+                d.onclick = () => { cb(m.name); sug.style.display="none"; inp.value=""; };
+                sug.appendChild(d);
+            });
+        };
+        goBtn.onclick = () => { if(inp.value) cb(inp.value); };
     }
-}
-
 
     function toggleShiny() {
         isShiny = !isShiny;
@@ -901,7 +872,7 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
     column.appendChild(formsBox);
     targetContainer.appendChild(column);
 
-    // 2. Handle Branching
+    // 2. Handle Branching: Each path gets its own arrow and label
     if (stage.evolves_to.length > 0) {
         const branchWrapper = document.createElement('div');
         branchWrapper.style.cssText = "display: flex; flex-direction: column; gap: 15px; justify-content: center;";
@@ -912,35 +883,95 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
             pathContainer.style.cssText = "display: flex; align-items: center;";
             branchWrapper.appendChild(pathContainer);
 
-            const details = next.evolution_details[0];
-            let methodText = "LEVEL UP"; 
+            // Create specific connector for THIS branch
+            // Inside your branch loop...
+const details = next.evolution_details[0];
+let methodText = "LEVEL UP"; 
 
-            if (details) {
-                const parts = [];
-                if (details.item) parts.push(details.item.name.replace(/-/g, ' ').toUpperCase());
-                if (details.min_level) parts.push(`LVL ${details.min_level}`);
-                if (details.trigger.name === 'trade') parts.push("TRADE");
-                methodText = parts.length > 0 ? parts.join(' + ') : details.trigger.name.toUpperCase();
-            }
+if (details) {
+    const parts = [];
+    
+    // 1. REMAP LOCATIONS TO STONES (Modern standard)
+   if (details.location) {
+    const loc = details.location.name.toLowerCase();
 
-            const connector = document.createElement('div');
-            connector.style.cssText = "display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 85px; padding: 0 5px;";
-            connector.innerHTML = `
-                <span style="font-size: 7px; font-weight: 900; color: var(--silver-dark); margin-bottom: -4px; text-align: center; line-height: 1.1;">
-                    ${methodText}
-                </span>
-                <span style="color: #cbd5e1; font-size: 20px;">→</span>
-            `;
+    // 1. LEAF STONE / MOSS ROCK LOCATIONS
+    if (loc.includes('moss') || loc.includes('eterna-forest') || loc.includes('pinwheel-forest') || loc.includes('petalburg-woods')) {
+        parts.push("LEAF STONE");
+    } 
+    // 2. ICE STONE / ICY ROCK LOCATIONS
+    else if (loc.includes('sinnoh') || loc.includes('frost') || loc.includes('lanakila') || loc.includes('twist-mountain')) {
+        parts.push("ICE STONE");
+    } 
+    // 3. THUNDER STONE / MAGNETIC FIELD LOCATIONS
+    else if (loc.includes('magnetic') || loc.includes('coronet') || loc.includes('chargestone') || loc.includes('mauville') || loc.includes('kalos-route-13')) {
+        parts.push("THUNDER STONE");
+    } 
+    // 4. FALLBACK (for any unique locations not covered by stones)
+    else {
+        parts.push(`AT ${details.location.name.replace(/-/g, ' ').toUpperCase()}`);
+    }
+}
+// 1. Fairy-type move check (Sylveon)
+if (details.known_move_type) {
+    const typeName = details.known_move_type.name.toUpperCase();
+    parts.push(`KNOWS ${typeName} MOVE`);
+}
+
+// 2. Friendship/Affection check (Sylveon + others)
+if (details.min_happiness || details.min_affection) {
+    let friendStr = "FRIENDSHIP";
+    
+    // Add time of day if specific (Espeon/Umbreon)
+    if (details.time_of_day) {
+        friendStr += ` (${details.time_of_day.toUpperCase()})`;
+    }
+    
+    parts.push(friendStr);
+}
+    // 2. Standard Stone/Item Trigger
+    if (details.item) {
+        parts.push(details.item.name.replace(/-/g, ' ').toUpperCase());
+    }
+
+    // 3. Friendship & Time
+    if (details.min_happiness) {
+        let friendStr = "FRIENDSHIP";
+        if (details.time_of_day) friendStr += ` (${details.time_of_day.toUpperCase()})`;
+        parts.push(friendStr);
+    }
+
+    // 4. Standard Triggers
+    if (details.min_level) parts.push(`LVL ${details.min_level}`);
+    if (details.trigger.name === 'trade') parts.push("TRADE");
+    if (details.held_item) parts.push(`HOLD ${details.held_item.name.replace(/-/g, ' ').toUpperCase()}`);
+    if (details.known_move) parts.push(`MOVE: ${details.known_move.name.toUpperCase()}`);
+    
+    // 5. Cleanup and deduplicate
+    const uniqueParts = [...new Set(parts)];
+    
+    // Final check: If a location was remapped to a stone that was already there, 
+    // Set() ensures it only shows once.
+    methodText = uniqueParts.length > 0 ? uniqueParts.join(' + ') : details.trigger.name.replace(/-/g, ' ').toUpperCase();
+}
+
+// UI Connector
+const connector = document.createElement('div');
+connector.style.cssText = "display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 85px; padding: 0 5px;";
+connector.innerHTML = `
+    <span style="font-size: 7px; font-weight: 900; color: var(--silver-dark); margin-bottom: -4px; text-align: center; line-height: 1.1;">
+        ${methodText}
+    </span>
+    <span style="color: #cbd5e1; font-size: 20px;">→</span>
+`;
             
             pathContainer.appendChild(connector);
             await renderBranch(next, pathContainer);
         }
     }
-  }
 }
+}
+
 </script>
 </body>
-
 </html>
-
-
