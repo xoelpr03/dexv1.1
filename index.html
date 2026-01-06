@@ -21,9 +21,17 @@
         margin: 0; padding: 0; 
         color: #1e293b; 
         min-height: 100vh; 
+        transition: background 0.5s ease; /* Makes the color swap smooth */
+        min-height: 100vh;
     }
 
-    body.theme-sv { background: linear-gradient(135deg, var(--scarlet) 0%, var(--violet) 100%); }
+   #display-card {
+    background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+    backdrop-filter: blur(10px); /* Blurs the background behind the card */
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
 
     .container { max-width: 1100px; margin: auto; padding: 10px; box-sizing: border-box; }
 
@@ -505,7 +513,7 @@
     const cap = s => s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
     
 function applyDynamicTheme(types) {
-    let bg = "#ffffff"; // default
+    let bg = "#f8fafc"; // Soft default gray
 
     if (types.length === 1) {
         const color = typeColors[types[0].type.name] || "#ffffff";
@@ -516,9 +524,10 @@ function applyDynamicTheme(types) {
         bg = `linear-gradient(135deg, ${color1}, ${color2})`;
     }
 
+    // Apply to the body background
     document.body.style.background = bg;
+    document.body.style.backgroundAttachment = "fixed"; // Keeps gradient smooth while scrolling
 }
-
 
 function getStatColor(v) {
     if(v < 50) return '#ff4d4d';
@@ -973,6 +982,7 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
 
