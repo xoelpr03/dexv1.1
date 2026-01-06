@@ -488,7 +488,7 @@
                         S / V
                 </button>
                 <button id="btn-la"
-                     class="game-btn" 
+                     class="game-btn disabled" 
                     style="background: linear-gradient(to right, #ff9900, #ffcc00); 
         border-radius: 50px; 
         border: none; 
@@ -767,11 +767,16 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
 
     // --- Placeholder for other functions to keep code running ---
     function setGame(g, btn) {
+    // Verifica si el juego tiene movimientos
+    const hasMoves = currentPoke.poke.moves.some(m => 
+        m.version_group_details.some(v => v.version_group.name === (g==='la'?'legends-arceus':'scarlet-violet'))
+    );
+    if (!hasMoves) return; // No hacer nada si no hay movimientos
+
     activeGame = g;
     document.querySelectorAll('.game-btn').forEach(b => {
         b.classList.remove('active');
-        if (b.id !== btn.id) b.style.opacity = '0.5'; // grisear el no seleccionado
-        else b.style.opacity = '1';
+        b.style.opacity = (b.id === btn.id) ? '1' : '0.5';
     });
     btn.classList.add('active');
     renderMoves();
@@ -1038,3 +1043,4 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
