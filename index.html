@@ -516,18 +516,14 @@
         window.scrollTo(0,0);
     }
 
-    // --- REPAIRED LOAD FUNCTION ---
     async function loadPokemon(name) {
         try {
-            // First try to get basic data to find the species
             let pokeData, speciesData;
             
             try {
-                // Try fetching as a specific variety/form first
                 pokeData = await (await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`)).json();
                 speciesData = await (await fetch(pokeData.species.url)).json();
             } catch (e) {
-                // If that fails, try fetching as a species (default form)
                 speciesData = await (await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name.toLowerCase()}`)).json();
                 const defaultUrl = speciesData.varieties.find(v => v.is_default).pokemon.url;
                 pokeData = await (await fetch(defaultUrl)).json();
@@ -850,7 +846,7 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
     column.appendChild(formsBox);
     targetContainer.appendChild(column);
 
-    // 2. Handle Branching: Each path gets its own arrow and label
+    // 2. Handle Branching
     if (stage.evolves_to.length > 0) {
         const branchWrapper = document.createElement('div');
         branchWrapper.style.cssText = "display: flex; flex-direction: column; gap: 15px; justify-content: center;";
@@ -861,95 +857,33 @@ document.getElementById('abilitiesArea').innerHTML = absHtml;
             pathContainer.style.cssText = "display: flex; align-items: center;";
             branchWrapper.appendChild(pathContainer);
 
-            // Create specific connector for THIS branch
-            // Inside your branch loop...
-const details = next.evolution_details[0];
-let methodText = "LEVEL UP"; 
+            const details = next.evolution_details[0];
+            let methodText = "LEVEL UP"; 
 
-if (details) {
-    const parts = [];
-    
-    // 1. REMAP LOCATIONS TO STONES (Modern standard)
-   if (details.location) {
-    const loc = details.location.name.toLowerCase();
+            if (details) {
+                const parts = [];
+                if (details.item) parts.push(details.item.name.replace(/-/g, ' ').toUpperCase());
+                if (details.min_level) parts.push(`LVL ${details.min_level}`);
+                if (details.trigger.name === 'trade') parts.push("TRADE");
+                methodText = parts.length > 0 ? parts.join(' + ') : details.trigger.name.toUpperCase();
+            }
 
-    // 1. LEAF STONE / MOSS ROCK LOCATIONS
-    if (loc.includes('moss') || loc.includes('eterna-forest') || loc.includes('pinwheel-forest') || loc.includes('petalburg-woods')) {
-        parts.push("LEAF STONE");
-    } 
-    // 2. ICE STONE / ICY ROCK LOCATIONS
-    else if (loc.includes('sinnoh') || loc.includes('frost') || loc.includes('lanakila') || loc.includes('twist-mountain')) {
-        parts.push("ICE STONE");
-    } 
-    // 3. THUNDER STONE / MAGNETIC FIELD LOCATIONS
-    else if (loc.includes('magnetic') || loc.includes('coronet') || loc.includes('chargestone') || loc.includes('mauville') || loc.includes('kalos-route-13')) {
-        parts.push("THUNDER STONE");
-    } 
-    // 4. FALLBACK (for any unique locations not covered by stones)
-    else {
-        parts.push(`AT ${details.location.name.replace(/-/g, ' ').toUpperCase()}`);
-    }
-}
-// 1. Fairy-type move check (Sylveon)
-if (details.known_move_type) {
-    const typeName = details.known_move_type.name.toUpperCase();
-    parts.push(`KNOWS ${typeName} MOVE`);
-}
-
-// 2. Friendship/Affection check (Sylveon + others)
-if (details.min_happiness || details.min_affection) {
-    let friendStr = "FRIENDSHIP";
-    
-    // Add time of day if specific (Espeon/Umbreon)
-    if (details.time_of_day) {
-        friendStr += ` (${details.time_of_day.toUpperCase()})`;
-    }
-    
-    parts.push(friendStr);
-}
-    // 2. Standard Stone/Item Trigger
-    if (details.item) {
-        parts.push(details.item.name.replace(/-/g, ' ').toUpperCase());
-    }
-
-    // 3. Friendship & Time
-    if (details.min_happiness) {
-        let friendStr = "FRIENDSHIP";
-        if (details.time_of_day) friendStr += ` (${details.time_of_day.toUpperCase()})`;
-        parts.push(friendStr);
-    }
-
-    // 4. Standard Triggers
-    if (details.min_level) parts.push(`LVL ${details.min_level}`);
-    if (details.trigger.name === 'trade') parts.push("TRADE");
-    if (details.held_item) parts.push(`HOLD ${details.held_item.name.replace(/-/g, ' ').toUpperCase()}`);
-    if (details.known_move) parts.push(`MOVE: ${details.known_move.name.toUpperCase()}`);
-    
-    // 5. Cleanup and deduplicate
-    const uniqueParts = [...new Set(parts)];
-    
-    // Final check: If a location was remapped to a stone that was already there, 
-    // Set() ensures it only shows once.
-    methodText = uniqueParts.length > 0 ? uniqueParts.join(' + ') : details.trigger.name.replace(/-/g, ' ').toUpperCase();
-}
-
-// UI Connector
-const connector = document.createElement('div');
-connector.style.cssText = "display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 85px; padding: 0 5px;";
-connector.innerHTML = `
-    <span style="font-size: 7px; font-weight: 900; color: var(--silver-dark); margin-bottom: -4px; text-align: center; line-height: 1.1;">
-        ${methodText}
-    </span>
-    <span style="color: #cbd5e1; font-size: 20px;">→</span>
-`;
+            const connector = document.createElement('div');
+            connector.style.cssText = "display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 85px; padding: 0 5px;";
+            connector.innerHTML = `
+                <span style="font-size: 7px; font-weight: 900; color: var(--silver-dark); margin-bottom: -4px; text-align: center; line-height: 1.1;">
+                    ${methodText}
+                </span>
+                <span style="color: #cbd5e1; font-size: 20px;">→</span>
+            `;
             
             pathContainer.appendChild(connector);
             await renderBranch(next, pathContainer);
         }
     }
+  }
 }
-}
-
 </script>
 </body>
+
 </html>
