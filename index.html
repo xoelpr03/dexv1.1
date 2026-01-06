@@ -179,30 +179,42 @@
     .evo-stage-col { display: flex; flex-direction: column; align-items: center; text-align: center; }
     .evo-img { width: 70px; height: 70px; }
 /* --- CLEAN EMOJI SHINY BUTTON --- */
-.shiny-btn { 
-.shiny-btn { 
-    /* Force size to stay identical */
-    transform: scale(1) !important; 
-    font-size: 32px; 
+.shiny-btn {
+    /* 1. LOCK THE SIZE: Use fixed width/height to prevent any jumping */
+    width: 60px;
+    height: 60px;
+    font-size: 32px;
     
-    /* OFF STATE: Grey and Dull */
-    filter: grayscale(1) brightness(0.6);
-    
-    background: none; 
-    border: none; 
+    /* 2. RESET DEFAULTS: Remove all standard button behaviors */
+    background: transparent;
+    border: none;
+    outline: none;
     cursor: pointer;
-    padding: 10px;
-    transition: filter 0.3s ease; /* Only transition the color/glow */
-    user-select: none;
+    padding: 0;
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    /* 3. OFF STATE: Grey and flat */
+    filter: grayscale(1) opacity(0.5);
+    transition: filter 0.3s ease; /* Only color and glow change */
+    
+    /* Prevent blue highlight on mobile tap */
+    -webkit-tap-highlight-color: transparent;
 }
 
-.shiny-btn.active { 
-    /* ON STATE: Color + Glow (Still same size) */
-    transform: scale(1) !important; 
-    filter: grayscale(0) brightness(1) drop-shadow(0 0 12px #ffcb05);
+.shiny-btn.active {
+    /* 4. ON STATE: High contrast and glow, NO scale/transform */
+    filter: grayscale(0) opacity(1) drop-shadow(0 0 8px #ffcb05) drop-shadow(0 0 2px #ffcb05);
+}
+
+/* 5. OVERRIDE: Prevent any "grow" effects on click/hover */
+.shiny-btn:hover, 
+.shiny-btn:active, 
+.shiny-btn:focus {
+    transform: none !important;
+    background: transparent !important;
 }
 
 /* Back button matching the clean silver look */
@@ -901,6 +913,7 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
+
 
 
 
