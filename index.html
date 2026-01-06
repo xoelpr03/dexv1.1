@@ -19,10 +19,9 @@
     body { 
         font-family: 'Inter', sans-serif; 
         margin: 0; padding: 0; 
-        color: #1e293b; 
-        min-height: 100vh; 
+        color: #1e293b;  
         transition: background 0.5s ease; /* Makes the color swap smooth */
-        min-height: 100vh;
+        height: 100%;
     }
 
    #display-card {
@@ -44,6 +43,8 @@
         height: 100vh; 
         width: 100%;
         transition: all 0.3s ease;
+        overflow: hidden; /* desactiva scroll */
+        height: 100vh;
     }
 
     .search-box-container { 
@@ -167,6 +168,32 @@
     }
 
     #formsList { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .form-btn {
+    background: white;
+    border: 2px solid #f1f5f9;
+    border-radius: 12px;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 2px;
+}
+
+.form-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.form-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
 
     .variant-btn {
         background: white;
@@ -547,6 +574,7 @@ function getStatColor(v) {
     function goBack() {
         document.getElementById('display-card').style.display = 'none';
         document.getElementById('search-section').style.display = 'flex';
+        document.body.classList.add('menu-active');
         document.body.className = '';
         window.scrollTo(0,0);
     }
@@ -574,6 +602,7 @@ function getStatColor(v) {
             
             document.getElementById('search-section').style.display = 'none';
             document.getElementById('display-card').style.display = 'block';
+            document.body.classList.remove('menu-active');
             
             render();
             window.scrollTo(0, 0);
@@ -982,9 +1011,3 @@ connector.innerHTML = `
 </script>
 </body>
 </html>
-
-
-
-
-
-
