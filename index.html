@@ -753,23 +753,65 @@
             <button id="btn-sv" 
                     class="game-btn active" 
                     style="background: linear-gradient(to right, var(--scarlet), var(--violet)); 
-                    border-radius: 50px; border: none; padding: 10px 20px; color: white; cursor: pointer; font-weight: bold;" 
+                    border-radius: 50px; border: none; padding: 5px 10px; color: white; cursor: pointer; font-weight: bold;" 
                     onclick="setGame('sv', this)">
                     SV
             </button>
             <button id="btn-la"
                     class="game-btn" 
                     style="background: linear-gradient(to right, #ff9900, #ffcc00); 
-                    border-radius: 50px; border: none; padding: 10px 20px; color: white; cursor: pointer; font-weight: bold;" 
+                    border-radius: 50px; border: none; padding: 5px 10px; color: white; cursor: pointer; font-weight: bold;" 
                     onclick="setGame('la', this)">
                     PLA
+            </button>
+            <button id="btn-bdsp"
+                    class="game-btn" 
+                    style="background: linear-gradient(to right, #46afcf, #cf46a3); 
+                    border-radius: 50px; border: none; padding: 5px 10px; color: white; cursor: pointer; font-weight: bold;" 
+                    onclick="setGame('bdsp', this)">
+                    BDSP
             </button>
             <button id="btn-ss"
                     class="game-btn" 
                     style="background: linear-gradient(to right, #009cfc, #fc0069); 
-                    border-radius: 50px; border: none; padding: 10px 20px; color: white; cursor: pointer; font-weight: bold;" 
+                    border-radius: 50px; border: none; padding: 5px 10px; color: white; cursor: pointer; font-weight: bold;" 
                     onclick="setGame('ss', this)">
                     SwSh
+            </button>
+            <button id="btn-lgpe"
+                    class="game-btn" 
+                    style="background: linear-gradient(to right, #ffce08, #8a3200); 
+                    border-radius: 50px; border: none; padding: 5px 10px; color: white; cursor: pointer; font-weight: bold;" 
+                    onclick="setGame('lgpe', this)">
+                    LGPE
+            </button>
+            <button id="btn-usum"
+                    class="game-btn" 
+                    style="background: linear-gradient(to right, #ff9100, #0b008a); 
+                    border-radius: 50px; border: none; padding: 5px 10px; color: white; cursor: pointer; font-weight: bold;" 
+                    onclick="setGame('usum', this)">
+                    USUM
+            </button>
+            <button id="btn-sm"
+                    class="game-btn" 
+                    style="background: linear-gradient(to right, #ffbb00, #6a25c4); 
+                    border-radius: 50px; border: none; padding: 5px 10px; color: white; cursor: pointer; font-weight: bold;" 
+                    onclick="setGame('sm', this)">
+                    SM
+            </button>
+            <button id="btn-oras"
+                    class="game-btn" 
+                    style="background: linear-gradient(to right, #d90000, #0021db); 
+                    border-radius: 50px; border: none; padding: 5px 10px; color: white; cursor: pointer; font-weight: bold;" 
+                    onclick="setGame('oras', this)">
+                    ORAS
+            </button>
+            <button id="btn-xy"
+                    class="game-btn" 
+                    style="background: linear-gradient(to right, #008bdb, #9c1717); 
+                    border-radius: 50px; border: none; padding: 5px 10px; color: white; cursor: pointer; font-weight: bold;" 
+                    onclick="setGame('xy', this)">
+                    XY
             </button>
         </div>
         <button id="shinySparkle" class="shiny-btn" onclick="toggleShiny()">✨</button>
@@ -844,6 +886,7 @@
                     <button class="v-toggle" onclick="setMoveMode('level-up', this)">Level</button>
                     <button class="v-toggle" onclick="setMoveMode('machine', this)">TM</button>
                     <button class="v-toggle" onclick="setMoveMode('egg', this)">Egg</button>
+                    <button class="v-toggle" onclick="setMoveMode('tutor', this)">Tutor</button>
                     <button class="v-toggle active" onclick="setMoveMode('all', this)">All</button>
                 </div>
                 <div style="overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0; margin-top:10px;">
@@ -1289,7 +1332,13 @@ async function loadCapForms() {
     if (activeGame === 'sv') vGroup = 'scarlet-violet';
     else if (activeGame === 'la') vGroup = 'legends-arceus';
     else if (activeGame === 'ss') vGroup = 'sword-shield';
-    else vGroup = 'sword-shield';
+    else if (activeGame === 'bdsp') vGroup = 'brilliant-diamond-shining-pearl';
+    else if (activeGame === 'lgpe') vGroup = 'lets-go-pikachu-eevee';
+    else if (activeGame === 'usum') vGroup = 'ultra-sun-ultra-moon';
+    else if (activeGame === 'sm') vGroup = 'sun-moon';
+    else if (activeGame === 'oras') vGroup = 'omega-ruby-alpha-sapphire';
+    else if (activeGame === 'xy') vGroup = 'x-y';
+    else vGroup = 'scarlet-violet';
 
     // Filtrar movimientos según version_group y moveMode
     let movesList = poke.moves.filter(m => {
@@ -1332,7 +1381,7 @@ async function loadCapForms() {
 
             let displayLvl = '—';
             if (detail && detail.move_learn_method.name === 'level-up') displayLvl = detail.level_learned_at;
-            if (moveMode === 'machine' || moveMode === 'egg') displayLvl = '—';
+            if (moveMode === 'machine' || moveMode === 'egg'|| moveMode === 'tutor') displayLvl = '—';
 
             return {
                 lvl: displayLvl,
@@ -1691,4 +1740,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
