@@ -793,8 +793,8 @@
         —
     </div>
 </div>
-
-</div>
+<div id="pokeTypes"></div>
+<div id="typeWeakness"></div>      <div id="pokeTypes"></div>          <div id="typeResistance"></div>    <div id="typeImmunity"></div></div>
         
         <!-- Right Column -->
         <div style="flex:1; min-width: 300px;">
@@ -1046,6 +1046,69 @@ for(let a of uniqueAbilities) {
 }
 document.getElementById('abilitiesArea').innerHTML = absHtml;
 
+const types = poke.types.map(t => t.type.name);
+const damageMultipliers = {};
+const allTypes = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
+allTypes.forEach(type => damageMultipliers[type] = 1);
+
+for (const typeName of types) {
+    const typeReq = await fetch(`https://pokeapi.co/api/v2/type/${typeName}`);
+    const typeData = await typeReq.json();
+    typeData.damage_relations.double_damage_from.forEach(t => damageMultipliers[t.name] *= 2);
+    typeData.damage_relations.half_damage_from.forEach(t => damageMultipliers[t.name] *= 0.5);
+    typeData.damage_relations.no_damage_from.forEach(t => damageMultipliers[t.name] *= 0);
+}
+
+// Containers for our three categories
+let weakHtml = "";
+let resistHtml = "";
+let immuneHtml = "";
+
+// Sort keys so 4x comes before 2x, and 0.5x before 0.25x
+const sortedEntries = Object.entries(damageMultipliers)
+    .filter(([type, mult]) => mult !== 1)
+    .sort((a, b) => b[1] - a[1]);
+
+sortedEntries.forEach(([type, mult]) => {
+    const badge = `
+        <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <span class="type-badge" style="background:${typeColors[type]}; margin:0; font-size:9px; width:45px; text-align:center;">
+                ${type}
+            </span>
+            <span style="font-size:9px; font-weight:900; color:${mult > 1 ? '#ef4444' : mult === 0 ? '#64748b' : '#10b981'};">
+                ${mult}x
+            </span>
+        </div>`;
+    
+    if (mult > 1) {
+        weakHtml += badge;
+    } else if (mult > 0) {
+        resistHtml += badge;
+    } else {
+        // Immunity (0x) logic
+        immuneHtml += badge;
+    }
+});
+
+// Helper to wrap each section
+const renderSection = (id, title, content) => {
+    const el = document.getElementById(id);
+    if (content === "") {
+        el.style.display = "none"; // Hide section if empty (e.g., no immunities)
+        return;
+    }
+    el.style.display = "block";
+    el.innerHTML = `
+        <div style="margin: 8px 0; padding: 6px; background: rgba(255,255,255,0.3); border-radius: 8px; border: 1px solid #e2e8f0;">
+            <div style="font-size: 8px; font-weight: 800; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; text-align:center;">${title}</div>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;">${content}</div>
+        </div>
+    `;
+};
+
+renderSection('typeWeakness', 'Weaknesses', weakHtml);
+renderSection('typeResistance', 'Resistances', resistHtml);
+renderSection('typeImmunity', 'Immunities', immuneHtml);
         renderEvoChain(evo.chain);
         renderFormsList();
         renderMoves();
@@ -1516,5 +1579,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
-
