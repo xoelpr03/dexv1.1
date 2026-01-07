@@ -750,6 +750,11 @@
     <div class="header-flex" style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 20px;">
         <button class="back-btn" onclick="goBack()">← BACK</button>
         <div class="game-switcher" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 0 auto; max-width: 90%;">
+           <button id="btn-plza" class="game-btn" 
+            style="background: linear-gradient(to right, #000000, #00ff95); border-radius: 50px; border: none; padding: 5px 12px; color: white; cursor: pointer; font-weight: bold; font-size: 11px;" 
+            onclick="showProgress()">
+            PLZA
+    </button>
             <button id="btn-sv" 
                     class="game-btn active" 
                     style="background: linear-gradient(to right, var(--scarlet), var(--violet)); 
@@ -1733,6 +1738,9 @@ function getPokemonRole(stats, bst) {
     return { label: "BALANCED", color: "#64748b" };
 
 }
+    function showProgress() {
+    alert("Legends: Z-A data is currently in progress.");
+}
 // Ensure the UI updates when the page first loads
 document.addEventListener('DOMContentLoaded', () => {
     updateFavUI();
@@ -1740,4 +1748,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
