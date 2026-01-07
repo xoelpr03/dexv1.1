@@ -857,7 +857,16 @@
 <script>
     let allPokes = [], currentPoke = null, isShiny = false, activeVer = 'scarlet', activeGame = 'sv', moveMode = 'all';
     const typeColors = { grass: '#7AC74C', fire: '#EE8130', water: '#6390F0', bug: '#A6B91A', normal: '#A8A77A', poison: '#A33EA1', electric: '#F7D02C', ground: '#E2BF65', fairy: '#D685AD', fighting: '#C22E28', psychic: '#F95587', rock: '#B6A136', ghost: '#735797', ice: '#96D9D6', dragon: '#6F35FC', dark: '#705746', steel: '#B7B7CE', flying: '#A98FF3' };
-    const cap = s => s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
+    const cap = s => {
+    // Lista de excepciones
+    const exceptions = ['jangmo-o', 'hakamo-o', 'kommo-o', 'porygon-z', 'wo-chien', 'chien-pao', 'ting-lu', 'chi-yu'];
+    if (exceptions.includes(s.toLowerCase())) {
+        // Solo capitalizamos la primera letra de cada parte separada por guion
+        return s.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('-');
+    }
+    // Para los demás, reemplazamos guiones por espacios y capitalizamos cada palabra
+    return s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
+};
     const dexButtons = document.querySelectorAll('.dex-btn');
     const dexTextDiv = document.getElementById('dexText');
     let currentPokemon = null; 
@@ -1507,4 +1516,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
