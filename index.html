@@ -613,7 +613,7 @@
         padding: 10px; 
         min-height: 70px;
         transition: all 0.3s ease;">
-        <span style="color:#94a3b8; font-size: 11px;">Search for a Pokémon and click 🤍 to add them to your favorites!</span>
+        <span style="color:#94a3b8; font-size: 11px;">Search for a Pokémon and click 🤍 to start your team!</span>
     </div>
 </div>
     <div id="search-section">
@@ -755,14 +755,21 @@
                     style="background: linear-gradient(to right, var(--scarlet), var(--violet)); 
                     border-radius: 50px; border: none; padding: 10px 20px; color: white; cursor: pointer; font-weight: bold;" 
                     onclick="setGame('sv', this)">
-                    S / V
+                    Scarlet & Violet
             </button>
             <button id="btn-la"
                     class="game-btn" 
                     style="background: linear-gradient(to right, #ff9900, #ffcc00); 
                     border-radius: 50px; border: none; padding: 10px 20px; color: white; cursor: pointer; font-weight: bold;" 
                     onclick="setGame('la', this)">
-                    LA
+                    Legends Arceus
+            </button>
+            <button id="btn-ss"
+                    class="game-btn" 
+                    style="background: linear-gradient(to right, #009cfc, #fc0069); 
+                    border-radius: 50px; border: none; padding: 10px 20px; color: white; cursor: pointer; font-weight: bold;" 
+                    onclick="setGame('ss', this)">
+                    Sword & Shield
             </button>
         </div>
         <button id="shinySparkle" class="shiny-btn" onclick="toggleShiny()">✨</button>
@@ -781,8 +788,8 @@
 
     <div id="nav-pokes" style="display:flex; justify-content: space-between; align-items: center; margin-top: 10px;"></div>
     <div id="pokeTypes" style="margin-top: 10px;"></div>
+        <div id="role-container"style="margin-top: 20px; text-align: center; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0;"></div>
     <div id="stats-area" style="margin-top: 20px; text-align: left; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0;"></div>
-
     <div id="dexEntryBox" style="margin-top: 20px; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: left; background: #fff;">
     <div style="font-weight: 900; font-size: 10px; color: #64748b; margin-bottom: 8px; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center;">
         <span>POKEDEX ENTRY</span>
@@ -1109,6 +1116,29 @@ const renderSection = (id, title, content) => {
 renderSection('typeWeakness', 'Weaknesses', weakHtml);
 renderSection('typeResistance', 'Resistances', resistHtml);
 renderSection('typeImmunity', 'Immunities', immuneHtml);
+
+// Inside render() after baseStatTotal is calculated:
+const role = getPokemonRole(poke.stats, baseStatTotal);
+
+const roleBadge = `
+    <div style="
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: ${role.color};
+        color: white;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    ">
+        ${role.label}
+    </div>
+`;
+
+document.getElementById('role-container').innerHTML = roleBadge;
+
         renderEvoChain(evo.chain);
         renderFormsList();
         renderMoves();
@@ -1119,8 +1149,8 @@ renderSection('typeImmunity', 'Immunities', immuneHtml);
     const list = document.getElementById('formsList');
     const formsArea = document.getElementById('formsArea');
 
-    // If it's not Minior, use your standard logic
-    if (currentPoke.species.name !== 'minior') {
+    // --- STANDARD LOGIC (except Minior & Pikachu) ---
+    if (currentPoke.species.name !== 'minior' && currentPoke.species.name !== 'pikachu') {
         if (varieties.length <= 1) {
             formsArea.style.display = 'none';
             return;
@@ -1128,39 +1158,79 @@ renderSection('typeImmunity', 'Immunities', immuneHtml);
         formsArea.style.display = 'block';
         list.innerHTML = varieties.map(v => {
             const isCurrent = v.pokemon.name === currentPoke.poke.name;
-            const label = v.is_default ? 'BASE' : v.pokemon.name.replace(currentPoke.species.name + '-', '').toUpperCase();
+            const label = v.is_default 
+                ? 'BASE' 
+                : v.pokemon.name.replace(currentPoke.species.name + '-', '').toUpperCase();
             return `<button class="form-btn ${isCurrent ? 'active' : ''}" onclick="loadForm('${v.pokemon.name}')">${label}</button>`;
         }).join('');
         return;
     }
 
-    // --- MINIOR SPECIFIC LOGIC ---
-    formsArea.style.display = 'block';
-    
-    // 1. Find the first Meteor form (usually 'minior-red-meteor' or 'minior-meteor')
-    const meteorForm = varieties.find(v => v.pokemon.name.includes('meteor'));
-    
-    // 2. Find the first Core form (usually the default 'minior-red')
-    const coreForm = varieties.find(v => !v.pokemon.name.includes('meteor'));
+    // --- MINIOR LOGIC ---
+    if (currentPoke.species.name === 'minior') {
+        formsArea.style.display = 'block';
+        const meteorForm = varieties.find(v => v.pokemon.name.includes('meteor'));
+        const coreForm = varieties.find(v => !v.pokemon.name.includes('meteor'));
 
-    const simplifiedVarieties = [
-        { name: meteorForm.pokemon.name, label: 'METEOR FORM' },
-        { name: coreForm.pokemon.name, label: 'CORE FORM' }
-    ];
+        const simplifiedVarieties = [
+            { name: meteorForm.pokemon.name, label: 'METEOR FORM' },
+            { name: coreForm.pokemon.name, label: 'CORE FORM' }
+        ];
 
-    list.innerHTML = simplifiedVarieties.map(v => {
-        const isCurrent = currentPoke.poke.name.includes('meteor') 
-            ? v.label === 'METEOR FORM' 
-            : v.label === 'CORE FORM';
-
-        return `<button class="form-btn ${isCurrent ? 'active' : ''}" onclick="loadForm('${v.name}')">${v.label}</button>`;
-    }).join('');
-}
-    async function loadForm(variantName) {
-        const pokeData = await (await fetch(`https://pokeapi.co/api/v2/pokemon/${variantName}`)).json();
-        currentPoke.poke = pokeData;
-        render(); // This ensures stats and images refresh
+        list.innerHTML = simplifiedVarieties.map(v => {
+            const isCurrent = currentPoke.poke.name.includes('meteor') 
+                ? v.label === 'METEOR FORM' 
+                : v.label === 'CORE FORM';
+            return `<button class="form-btn ${isCurrent ? 'active' : ''}" onclick="loadForm('${v.name}')">${v.label}</button>`;
+        }).join('');
+        return;
     }
+
+    // --- PIKACHU LOGIC ---
+    if (currentPoke.species.name === 'pikachu') {
+        formsArea.style.display = 'block';
+
+        // Separar Cap forms y las normales, excluyendo Cosplay
+        const capForms = varieties.filter(v => v.pokemon.name.includes('cap'));
+        const normalForms = varieties.filter(v => 
+            !v.pokemon.name.includes('cap') && !v.pokemon.name.includes('cosplay')
+        );
+
+        // Botones para formas normales
+        let html = normalForms.map(v => {
+            const isCurrent = v.pokemon.name === currentPoke.poke.name;
+            const label = v.is_default 
+                ? 'BASE' 
+                : v.pokemon.name.replace('pikachu-', '').toUpperCase();
+            return `<button class="form-btn ${isCurrent ? 'active' : ''}" onclick="loadForm('${v.pokemon.name}')">${label}</button>`;
+        }).join('');
+
+        // Botón único para todas las Cap forms, si hay alguna
+        const filteredCapForms = capForms.filter(v => !v.pokemon.name.includes('cosplay'));
+        if (filteredCapForms.length > 0) {
+            const isCurrentCap = filteredCapForms.some(v => v.pokemon.name === currentPoke.poke.name);
+            html += `<button class="form-btn ${isCurrentCap ? 'active' : ''}" onclick="loadCapForms()">CAP</button>`;
+        }
+
+        list.innerHTML = html;
+        return;
+    }
+}
+
+// Carga una forma normal
+async function loadForm(variantName) {
+    const pokeData = await (await fetch(`https://pokeapi.co/api/v2/pokemon/${variantName}`)).json();
+    currentPoke.poke = pokeData;
+    render(); // Refresh stats, images, etc.
+}
+
+// Carga la primera forma Cap (puedes expandir a submenú si quieres elegir entre varias)
+async function loadCapForms() {
+    const capForm = currentPoke.species.varieties.find(v => v.pokemon.name.includes('cap') && !v.pokemon.name.includes('cosplay'));
+    if (!capForm) return;
+    await loadForm(capForm.pokemon.name);
+    // Aquí podrías abrir un modal o submenú para elegir cuál de las Cap forms
+}
 
     // --- SEARCH LOGIC ---
     function setupSearch(id, sugId, list, cb) {
@@ -1218,6 +1288,7 @@ renderSection('typeImmunity', 'Immunities', immuneHtml);
     let vGroup = '';
     if (activeGame === 'sv') vGroup = 'scarlet-violet';
     else if (activeGame === 'la') vGroup = 'legends-arceus';
+    else if (activeGame === 'ss') vGroup = 'sword-shield';
     else vGroup = 'sword-shield';
 
     // Filtrar movimientos según version_group y moveMode
@@ -1571,7 +1642,48 @@ function quickSearch(name) {
     const input = document.getElementById('pokeIn'); 
     if(input) input.value = name;
 }
+function getPokemonRole(stats, bst) {
+    const hp = stats.find(s => s.stat.name === 'hp').base_stat;
+    const atk = stats.find(s => s.stat.name === 'attack').base_stat;
+    const def = stats.find(s => s.stat.name === 'defense').base_stat;
+    const spa = stats.find(s => s.stat.name === 'special-attack').base_stat;
+    const spd = stats.find(s => s.stat.name === 'special-defense').base_stat;
+    const spe = stats.find(s => s.stat.name === 'speed').base_stat;
 
+    // Helper para chequear si son "balanceados" en ataque
+    const isMixed = Math.abs(atk - spa) <= Math.max(atk, spa) * 0.3;
+
+    // Roles
+    if (bst < 300) return { label: "LITTLE CUP", color: "#94a3b8" };
+    
+    if (atk >= 100 && spa >= 100 && spe > 80 && isMixed) 
+        return { label: "MIXED ATTACKER", color: "#ef4444" };
+    
+    if (atk >= 100 && spa >= 100 && spe <= 80 && isMixed) 
+        return { label: "SLOW MIXED ATTACKER", color: "#f97316" };
+    
+    if (spe >= 100 && (atk >= 100 || spa >= 100)) {
+    if (atk > spa) {
+        return { label: "PHYSICAL GLASS CANNON", color: "#2563eb" }; // azul
+    } else if (spa > atk) {
+        return { label: "SPECIAL GLASS CANNON", color: "#9333ea" }; // morado
+    } else {
+        return { label: "MIXED GLASS CANNON", color: "#3b638f" }; // si atk = spa
+    }
+}
+    if ((def >= 100 || spd >= 100) && spe <= 50) 
+        return { label: "SLOW & BULKY", color: "#16a34a" };
+
+    // Nueva regla: si las defensas son mayores que los ataques, lo marcamos defensivo
+    if (def > atk && spd > spa) return { label: "DEFENSIVE", color: "#0ea5e9" };
+
+    // Si no es defensivo, seguimos con Physical/Special Attacker
+    if (atk > spa) return { label: "PHYSICAL ATTACKER", color: "#dc2626" };
+    if (spa > atk) return { label: "SPECIAL ATTACKER", color: "#8b5cf6" };
+    
+    return { label: "BALANCED", color: "#64748b" };
+
+}
 // Ensure the UI updates when the page first loads
 document.addEventListener('DOMContentLoaded', () => {
     updateFavUI();
