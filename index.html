@@ -677,7 +677,7 @@
                   box-shadow: 0 4px 0px #059669;"
            onmouseover="this.style.backgroundColor='#059669'; this.style.transform='translateY(-1px)'"
            onmouseout="this.style.backgroundColor='#10b981'; this.style.transform='translateY(0)'">
-            🏆 LORE MASTER
+            📖 LORE MASTER
         </a>
 
         <a href="https://xoelpr03.github.io/pokejuegobst/" 
@@ -751,8 +751,55 @@
         onmouseover="this.style.transform='scale(1.2)'" 
         onmouseout="this.style.transform='scale(1)'">
         🎲
-    </button>        <div id="pokeSuggsMini" class="suggestions"></div>
+    </button>
+   <div style="
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 5px; 
+    margin-left: auto; 
+    background: rgba(200,200,200,0.1); 
+    padding: 8px; 
+    border-radius: 16px; 
+    border: 1px solid var(--silver-dark);
+">
+    <span style="
+        font-size: 10px; 
+        font-weight: 800; 
+        color: var(--silver-dark); 
+        letter-spacing: 1px; 
+        text-transform: uppercase;
+    ">Minigames</span>
+
+    <div style="display: flex; gap: 5px;">
+        <a href="https://xoelpr03.github.io/pokejuegoloremaster/" title="Lore Master">
+            <button type="button" style="font-size: 18px; padding: 5px 10px; border-radius: 12px; border: none; background: #10b981; cursor: pointer; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                📖
+            </button>
+        </a>
+
+        <a href="https://xoelpr03.github.io/pokejuegobst/" title="Stat Master">
+            <button type="button" style="font-size: 18px; padding: 5px 10px; border-radius: 12px; border: none; background: #3b82f6; cursor: pointer; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                📊
+            </button>
+        </a>
+
+        <a href="https://xoelpr03.github.io/pokejuegohigher/" title="Higher or Lower">
+            <button type="button" style="font-size: 18px; padding: 5px 10px; border-radius: 12px; border: none; background: #fcba03; cursor: pointer; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                ⬆️
+            </button>
+        </a>
+
+        <a href="https://xoelpr03.github.io/pokejuegomatch/" title="Shiny Match">
+            <button type="button" style="font-size: 18px; padding: 5px 10px; border-radius: 12px; border: none; background: #e67e00; cursor: pointer; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                ✨
+            </button>
+        </a>
     </div>
+</div>
+    <div id="pokeSuggsMini" class="suggestions"></div>
+    </div>
+    
     <datalist id="pokeSuggestions"></datalist>
 
     <!-- Forms / Variants -->
@@ -1763,6 +1810,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
 
 
