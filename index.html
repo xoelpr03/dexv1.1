@@ -1096,11 +1096,21 @@ function getStatColor(v) {
     document.getElementById('dexNumber').innerText = `#${species.id.toString().padStart(4, '0')}`;
     document.getElementById('pCat').innerText = species.genera.find(g => g.language.name === 'en')?.genus || "";
 
-    // C. Image Logic
-    const imgUrl = isShiny ? 
-        (poke.sprites.other.home.front_shiny || poke.sprites.front_shiny) : 
-        (poke.sprites.other.home.front_default || poke.sprites.front_default);
-    document.getElementById('pokeImg').src = imgUrl;
+// C. Image Logic
+let imgUrl;
+
+if (poke.id >= 10278 && poke.id <= 10324) {
+    imgUrl = "images/special" + poke.id + ".png";
+} else {
+    const officialArt = poke.sprites.other["official-artwork"];
+
+    imgUrl = isShiny
+        ? (officialArt.front_shiny || poke.sprites.front_shiny)
+        : (officialArt.front_default || poke.sprites.front_default);
+}
+
+document.getElementById('pokeImg').src = imgUrl;
+
 
     // D. Types
     document.getElementById('pokeTypes').innerHTML = poke.types.map(t => 
@@ -1810,5 +1820,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
 
